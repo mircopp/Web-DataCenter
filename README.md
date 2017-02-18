@@ -6,13 +6,14 @@
 
 Please make sure that you have the following software up and running:
 
-| Software                    | Reference                                                 |
-|-----------------------------------------------------------------------------------------|
-| Python > 3.5                                    | https://www.python.org/downloads/     |
-| Pip > 9.0					                      | https://pypi.python.org/pypi/pip      |
-| cygwin or bash integration (for Windows)		  | https://www.cygwin.com/               |
-| openssl                                         | https://www.openssl.org/              |
-| NodeJS                                          | https://nodejs.org/en/                |
+| Software                               | Reference                                                                                                                                                                                                                                                     |
+|----------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Python > 3.5         | https://www.python.org/downloads/                          |
+| Pip > 9.0                           | https://pypi.python.org/pypi/pip                                                                                                       |
+| cygwin or bash integration (for Windows)               | https://www.cygwin.com/                                                                                                 |
+| openssl               | https://www.openssl.org/                                                                                                 |
+| NodeJS                     | https://nodejs.org/en/                                                                                                                                                        |
+
 
 ### Get Started
 
