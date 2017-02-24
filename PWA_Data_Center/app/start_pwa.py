@@ -26,6 +26,11 @@ def lib_js(path):
     abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'scripts', 'lib', path))
     return Response(open(abs_path, encoding='utf8').read(), mimetype='application/javascript')
 
+@app.route('/scripts/custom/<path:path>')
+def custom_js(path):
+    abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'scripts', 'custom', path))
+    return Response(open(abs_path, encoding='utf8').read(), mimetype='application/javascript')
+
 @app.route('/styles/<path:path>')
 def main_css(path):
     abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'styles', path))

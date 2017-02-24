@@ -77,13 +77,18 @@ define (function(require){
   // Start defining our app shell for the central logic
 
   // import requirements
+  // import objects
   const $ = require('jquery');
+
+  // import constructors
+  const Util = require('Util');
+  const util = new Util();
 
 
   const app = {
 
   };
 
-  console.log('finally in app shell');
+  util.log('main', 'Finally in app shell!!');
 });
 
