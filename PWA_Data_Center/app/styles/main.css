@@ -45,7 +45,6 @@ html, body {
 }
 .mdl-demo .mdl-layout__tab-bar {
   padding: 0;
-  padding-left: 16px;
   box-sizing: border-box;
   height: 100%;
   width: 100%;
@@ -211,3 +210,20 @@ html, body {
 .mdl-demo .mdl-menu__container {
   z-index: 99;
 }
+
+/*
+  Custom css styling:
+ */
+
+.mdl-layout-title {
+  margin-left: 30px;
+}
+
+.mdl-layout__tab-bar {
+  background-color: transparent;
+}
+
+.to_white {
+  filter: brightness(0) invert(100%);
+}
+

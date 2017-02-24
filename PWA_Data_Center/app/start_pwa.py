@@ -2,6 +2,7 @@ from flask import Flask, Response
 import ssl
 import sys
 import os
+from PIL import Image
 
 app = Flask(__name__)
 
@@ -33,11 +34,16 @@ def main_css(path):
 @app.route('/images/<path:path>')
 def main_img(path):
     abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'images', path))
-    return Response(open(abs_path).read())
+    return Response(open(abs_path, 'rb').read())
 
 @app.route('/images/touch/<path:path>')
 def touch_img(path):
     abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'images', 'touch', path))
+    return Response(open(abs_path, 'rb').read(), mimetype='image/png')
+
+@app.route('/images/icons/<path:path>')
+def icon_img(path):
+    abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'images', 'icons', path))
     return Response(open(abs_path, 'rb').read(), mimetype='image/png')
 
 @app.route('/service-worker.js')

@@ -21,10 +21,6 @@ define (function(require){
 
   'use strict';
 
-  // if ('serviceWorker' in navigator) {
-  //   navigator.serviceWorker.register('service-worker.js').then(function() { console.log('Service Worker Registered'); });
-  // }
-
   // Check to make sure service workers are supported in the current browser,
   // and that the current page is accessed from a secure origin. Using a
   // service worker from an insecure origin will trigger JS console errors. See
@@ -78,9 +74,16 @@ define (function(require){
     });
   }
 
-  // Your custom JavaScript goes here
+  // Start defining our app shell for the central logic
 
-  var $ = require('jquery');
+  // import requirements
+  const $ = require('jquery');
+
+
+  const app = {
+
+  };
+
   console.log('finally in app shell');
 });
 

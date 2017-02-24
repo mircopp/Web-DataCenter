@@ -6,7 +6,7 @@
 requirejs.config({
     baseUrl: 'scripts',
     paths: {
-      'jquery':               'lib/jquery-3.1.1',
+      'jquery':               'lib/jquery-3.1.1'
     }
 });
 
