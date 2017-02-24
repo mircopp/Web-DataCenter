@@ -20,6 +20,11 @@ def main_js(path):
     abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'scripts', path))
     return Response(open(abs_path).read(), mimetype='application/javascript')
 
+@app.route('/scripts/lib/<path:path>')
+def lib_js(path):
+    abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'scripts', 'lib', path))
+    return Response(open(abs_path, encoding='utf8').read(), mimetype='application/javascript')
+
 @app.route('/styles/<path:path>')
 def main_css(path):
     abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'styles', path))
@@ -38,6 +43,11 @@ def touch_img(path):
 @app.route('/service-worker.js')
 def service_worker():
     abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'service-worker.js'))
+    return Response(open(abs_path).read(), mimetype='application/javascript')
+
+@app.route('/config.js')
+def config():
+    abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'config.js'))
     return Response(open(abs_path).read(), mimetype='application/javascript')
 
 @app.route('/manifest.json')
