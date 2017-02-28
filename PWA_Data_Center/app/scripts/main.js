@@ -79,6 +79,8 @@ define (function(require){
   // import requirements
   // import objects
   const $ = require('jquery');
+  const dataStorageHub = require('storageHub');
+
 
   // import constructors
   const Util = require('Util');
@@ -89,6 +91,12 @@ define (function(require){
 
   };
 
+  dataStorageHub.init().then(function () {
+    console.log(dataStorageHub);
+  });
+
+
   util.log('main', 'Finally in app shell!!');
+
 });
 
