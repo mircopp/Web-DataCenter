@@ -1,12 +1,15 @@
 /**
  * Created by Mirco on 28.02.2017.
+ *
+ * This js file is the main part of this project, handling all incoming datarequests of all registered web applications
  */
+'use strict';
 
 define(function (require) {
 
-  const RequestHandler = require('DatabaseRequestHandler');
+  const Database = require('DatabaseRequestHandler');
 
-  const browserDataCenter = {};
+  const crossDomainManager = {};
 
 
   /**
@@ -15,22 +18,16 @@ define(function (require) {
    */
   const verifyOrigin = function (origin, method, centerObject) {
      if ( centerObject.knownHosts.indexOf(origin) > -1 ) {
-        allowedMethods = centerObject.hostSettings[origin].methods;
-        if ( centerObject.hostSettings[method] ) {
+        if ( centerObject.hostSettings[origin].methods[method] ) {
             return true;
         } else {
           return false;
         }
      } else {
-       centerObject.dbApi.insertNewHost(origin).then(function () {
-         // TODO bug with doubled initialization of request handler!
-         centerObject.init();
-         return false;
-       })
+       centerObject.dbApi.insertNewHost(origin);
+       return false;
      }
   };
-
-
 
   const initializePostApi = function (centerObject) {
       const handleRequest = function (event) {
@@ -39,6 +36,7 @@ define(function (require) {
           switch (dataObject.method) {
             case 'create':
               //TODO insert value into local database
+              return 'test';
                   break;
             case 'read':
               // TODO read value from database
@@ -64,27 +62,28 @@ define(function (require) {
           window.attachEvent("onmessage", handleRequest);
       }
   };
-  browserDataCenter.init = function () {
-    browserDataCenter.dbApi = new RequestHandler();
-    browserDataCenter.knownHosts = [];
-    browserDataCenter.hostSettings = {};
-
-    return browserDataCenter.dbApi.getKnownHosts()
+  crossDomainManager.init = function () {
+    crossDomainManager.dbApi = new Database();
+    crossDomainManager.knownHosts = [];
+    crossDomainManager.hostSettings = {};
+    return crossDomainManager.dbApi.getKnownHosts()
       .then(function (docs) {
-        browserDataCenter.knownHosts = browserDataCenter.knownHosts.concat(browserDataCenter.dbApi.handlePromiseKnownHosts(docs));
-      }).then(function () {
-        for ( let i = 0; i < browserDataCenter.knownHosts.length; i++) {
-          browserDataCenter.dbApi.getSettingsOfHost(browserDataCenter.knownHosts[i]).then(function (doc) {
+        crossDomainManager.knownHosts = crossDomainManager.knownHosts.concat(crossDomainManager.dbApi.extractKnownHosts(docs));
+      })
+      .then(function () {
+        for ( let i = 0; i < crossDomainManager.knownHosts.length; i++) {
+          crossDomainManager.dbApi.getSettingsOfHost(crossDomainManager.knownHosts[i]).then(function (doc) {
             let id = doc._id;
             delete doc['_id'];
             delete doc['_rev'];
-            browserDataCenter.hostSettings[id] = doc;
+            crossDomainManager.hostSettings[id] = doc;
           });
         }
-      }).then(function () {
-        initializePostApi(browserDataCenter);
+      })
+      .then(function () {
+        initializePostApi(crossDomainManager);
       });
   };
 
-  return browserDataCenter;
+  return crossDomainManager;
 });

@@ -227,3 +227,23 @@ html, body {
   filter: brightness(0) invert(100%);
 }
 
+.preview {
+  border: none;
+  pointer-events: none;
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-transform-origin: 0 0;
+  -moz-transform-origin: 0 0;
+  -ms-transform-origin: 0 0;
+  transform-origin: 0 0;
+}
+.mdl-card {
+  background-color: transparent;
+}
+
+.mdl-grid  {
+  background-color: transparent;
+}
+

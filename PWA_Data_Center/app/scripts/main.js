@@ -1,3 +1,5 @@
+'use strict';
+
 define (function(require){
   /*!
    *
@@ -19,7 +21,6 @@ define (function(require){
    */
   /* eslint-env browser */
 
-  'use strict';
 
   // Check to make sure service workers are supported in the current browser,
   // and that the current page is accessed from a secure origin. Using a
@@ -79,24 +80,38 @@ define (function(require){
   // import requirements
   // import objects
   const $ = require('jquery');
-  const dataStorageHub = require('storageHub');
+  const dataStorageHub = require('crossDomainManager');
 
 
   // import constructors
   const Util = require('Util');
   const util = new Util();
+  const Database = require('DatabaseRequestHandler');
+  const database = new Database();
 
 
   const app = {
 
   };
 
-  dataStorageHub.init().then(function () {
-    console.log(dataStorageHub);
-  });
+  dataStorageHub.init();
 
-
-  util.log('main', 'Finally in app shell!!');
+  var knownHosts = [];
+  database.getKnownHosts()
+    .then(function (docs) {
+      knownHosts = knownHosts.concat(database.extractKnownHosts(docs));
+    })
+    .then(function () {
+      for ( let i = 0; i < knownHosts.length; i++) {
+        var host = knownHosts[i];
+        util.displayHostOnLandingPage(host);
+        database.getSettingsOfHost(host).then(function (doc) {
+          var name = util.insertSettingsContainer('settings', doc._id);
+          util.insertMdlList(name, doc.methods);
+          util.addEventHandlerForSettingBoxes();
+        });
+      }
+    });
 
 });
 

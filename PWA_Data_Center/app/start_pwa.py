@@ -14,7 +14,7 @@ def index():
 @app.route('/<path:path>')
 def main_file(path):
     abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), path))
-    return Response(open(abs_path).read())
+    return Response(open(abs_path, 'rb').read())
 
 @app.route('/scripts/<path:path>')
 def main_js(path):
@@ -24,6 +24,11 @@ def main_js(path):
 @app.route('/scripts/lib/<path:path>')
 def lib_js(path):
     abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'scripts', 'lib', path))
+    return Response(open(abs_path, encoding='utf8').read(), mimetype='application/javascript')
+
+@app.route('/scripts/test/<path:path>')
+def test_js(path):
+    abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'scripts', 'test', path))
     return Response(open(abs_path, encoding='utf8').read(), mimetype='application/javascript')
 
 @app.route('/scripts/custom/<path:path>')

@@ -1,7 +1,3 @@
-/**
- * Created by Mirco on 28.02.2017.
- */
-
 /*
  * Copyright 2010 Nicholas C. Zakas. All rights reserved.
  * BSD Licensed.
@@ -35,10 +31,8 @@ CrossDomainStorage.prototype = {
 
                 if (window.addEventListener){
                     this._iframe.addEventListener("load", function(){ that._iframeLoaded(); }, false);
-                    window.addEventListener("message", function(event){ that._handleMessage(event); }, false);
                 } else if (this._iframe.attachEvent){
                     this._iframe.attachEvent("onload", function(){ that._iframeLoaded(); }, false);
-                    window.attachEvent("onmessage", function(event){ that._handleMessage(event); });
                 }
             } else {
                 throw new Error("Unsupported browser.");
