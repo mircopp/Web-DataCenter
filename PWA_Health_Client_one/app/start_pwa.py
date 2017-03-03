@@ -51,4 +51,4 @@ if __name__ == '__main__':
     temp = os.path.abspath(os.path.join(os.path.dirname(__file__),os.path.pardir))
     path = os.path.abspath(os.path.join(temp, os.path.pardir))
     context = (path  + '/ressources/ssl_certificates/app_client.crt', path + '/ressources/ssl_certificates/app_client.key')
-    app.run(host='0.0.0.0', port=3000, ssl_context=context, threaded=True, debug=True)
+    app.run(host='0.0.0.0', port=5000, ssl_context=context, threaded=True, debug=True)

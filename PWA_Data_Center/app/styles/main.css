@@ -240,10 +240,7 @@ html, body {
   transform-origin: 0 0;
 }
 .mdl-card {
-  background-color: transparent;
+  background-color: white;
 }
 
-.mdl-grid  {
-  background-color: transparent;
-}
 

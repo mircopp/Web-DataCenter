@@ -43,7 +43,6 @@ define(function (require) {
     },
     setMethodOfHost: function (host, method, setting) {
       var db = this.settingsDB;
-      console.log(host);
       return db.get(host)
         .then(function (doc) {
           doc.methods[method] = setting;

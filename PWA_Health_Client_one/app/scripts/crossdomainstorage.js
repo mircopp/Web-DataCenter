@@ -39,6 +39,7 @@ CrossDomainStorage.prototype = {
                 throw new Error("Unsupported browser.");
             }
         }
+
         this._iframe.src = this.origin;
         return this._iframe;
 

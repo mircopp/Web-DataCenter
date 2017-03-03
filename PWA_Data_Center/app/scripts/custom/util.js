@@ -73,19 +73,20 @@ define(function (require) {
       return name;
     },
 
-    displayHostOnLandingPage: function (host) {
+    createIFrame: function (host) {
       var container = document.querySelector('#apps');
       var html = '<section class="section--center mdl-grid mdl-shadow--4dp">' +
         '<h4 class="mdl-cell mdl-cell--12-col">' + host + '</h4>' +
         '<div class="mdl-card mdl-cell mdl-cell--12-col"> ' +
-        '<iframe sandbox="allow-scripts allow-forms allow-pointer-lock allow-same-origin" class="preview" src="' + host +'" style="height: 400px; filter: blur(1px) grayscale(100%); -webkit-filter: grayscale(100%);" scrolling="no">' +
+        '<iframe id="' + host.split('//')[1] + 'Frame" sandbox="allow-scripts allow-forms allow-pointer-lock allow-same-origin" class="preview" src="' + host +'" style="height: 400px; filter: blur(1px) grayscale(100%); -webkit-filter: grayscale(100%);" scrolling="no">' +
         '</iframe>'+
         '<div class="mdl-card__actions mdl-shadow--2dp" style="margin-top: 10px"> ' +
-        '<a target="_blank" href="' + host + '" class="mdl-button">Go to the application</a> ' +
+        '<a target="_blank" href="' + host + '" class="mdl-button"><i class="material-icons">send</i> Go to the application</a> ' +
         '</div>' +
         '</div>' +
         '</section>';
       container.innerHTML += html;
+      return document.getElementById(host.split('//')[1] + 'Frame');
     }
   };
 
