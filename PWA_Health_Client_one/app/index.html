@@ -53,7 +53,7 @@
     <link rel="stylesheet" href="styles/main.css">
 
     <style>
-      #start_stop {
+      #push {
         position: fixed;
         display: block;
         right: 0;
@@ -62,7 +62,7 @@
         margin-bottom: 40px;
         z-index: 900;
       }
-      #loading {
+      #test {
         position: fixed;
         display: block;
         bottom: 0;
@@ -249,14 +249,17 @@
             </div>
           </section>
         </div>
+
       </main>
     </div>
-    <a id="start_stop" class="mdl-button mdl-js-button mdl-button--raised mdl-color--accent mdl-color-text--accent-contrast">Start measure</a>
+
+    <a id="push" class="mdl-button mdl-js-button mdl-button--raised mdl-color--accent mdl-color-text--accent-contrast">Push data to center</a>
 
 
     <script src="https://code.getmdl.io/1.2.1/material.min.js"></script>
     <!-- build:js scripts/main.min.js -->
     <script src="scripts/crossdomainstorage.js" type="application/javascript"></script>
+    <script src="scripts/callbackmethods.js" type="application/javascript"></script>
     <script src="scripts/main.js"></script>
     <!-- endbuild -->
 

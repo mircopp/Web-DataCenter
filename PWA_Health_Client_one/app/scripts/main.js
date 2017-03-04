@@ -75,8 +75,9 @@
   // Your custom JavaScript goes here
   var domainManager = new CrossDomainStorage('https://localhost:3000');
   domainManager.init();
+  console.log('initialized');
 
-  document.getElementById('start_stop').onclick = function () {
+  document.getElementById('push').onclick = function () {
     domainManager.init();
     domainManager.requestValue({method:'create', query: ['do something', 'or another']}, null);
   }

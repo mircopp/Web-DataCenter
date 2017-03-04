@@ -13,7 +13,8 @@ define(function (require) {
 
   const crossDomainManager = {
     util: new Util(),
-    iframes: {}
+    iframes: {},
+    origin : location.origin
   };
 
 
@@ -61,12 +62,26 @@ define(function (require) {
      }
   };
 
+  const makeResponse = function (host, request, response) {
+    var res = {
+      request : request,
+      response : response
+    };
+    var iFrame = crossDomainManager.iframes[host];
+    iFrame.contentWindow.postMessage(JSON.stringify(res), host);
+  };
+
   const initializePostApi = function (centerObject) {
       const handleRequest = function (event) {
         const dataObject = JSON.parse(event.data);
         if (verifyOrigin(event.origin, dataObject.method, centerObject)) {
           switch (dataObject.method) {
             case 'create':
+              var response = {
+                status: 'success',
+                data : []
+              };
+              makeResponse(event.origin, dataObject, response);
               console.log('Created value: ', dataObject.query);
               //TODO insert value into local database
                   break;
@@ -86,8 +101,11 @@ define(function (require) {
               break;
           }
         } else {
-          // TODO what if method not allowed
-          throw 'Method not allowed';
+          var res = {
+            status : 'failure',
+            error : 'Method not allowed'
+          };
+          makeResponse(event.origin, dataObject, res);
         }
       };
 

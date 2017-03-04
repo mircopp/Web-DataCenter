@@ -96,7 +96,6 @@ define (function(require){
 
   dataStorageHub.init()
     .then(function (res) {
-      console.log('initiatlized');
       app.iframes = res [0];
       app.knownHosts = res [1];
       for ( let i = 0; i < app.knownHosts.length; i++) {
