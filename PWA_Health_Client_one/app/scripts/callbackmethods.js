@@ -13,9 +13,11 @@ callbackhandler.init = function (snackBarContainerID) {
 callbackhandler.createCallback = function (request, response) {
   if (request.method === 'create') {
     if ( response.status === 'success' ) {
-      alert('Data transfer successfully!');
+      var data = {message: 'Data transfer successfully!', timeout: 5000};
+      callbackhandler.snackbarContainer.MaterialSnackbar.showSnackbar(data);
     } else {
-      alert('Something went wrong!');
+      var data = {message: response.error, timeout: 5000};
+      callbackhandler.snackbarContainer.MaterialSnackbar.showSnackbar(data);
     }
   } else {
     throw 'Method unsupported';

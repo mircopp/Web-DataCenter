@@ -79,6 +79,6 @@
 
   document.getElementById('push').onclick = function () {
     domainManager.init();
-    domainManager.requestValue({method:'create', query: ['do something', 'or another']}, null);
+    domainManager.requestValue({method:'create', query: [{"type": "Heartrate", "unit": "bpm", "timestamp": "2017-02-13 13:32:37", "deviceID": "123456789abc", "values": {"val": 72}}]}, null);
   }
 })();

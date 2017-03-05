@@ -73,7 +73,7 @@ CrossDomainStorage.prototype = {
     //private methods
     _sendRequest: function(data){
         this._requests[data.request.id] = data;
-        this._iframe.contentWindow.postMessage(JSON.stringify(data.request), this.origin);
+        this._iframe.contentWindow.postMessage(JSON.stringify(data.request), '*');
     },
 
     _iframeLoaded: function(){

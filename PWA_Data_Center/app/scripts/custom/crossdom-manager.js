@@ -14,7 +14,8 @@ define(function (require) {
   const crossDomainManager = {
     util: new Util(),
     iframes: {},
-    origin : location.origin
+    origin : location.origin,
+    keys : ['type', 'timestamp', 'unit', 'deviceID', 'values']
   };
 
 
@@ -62,13 +63,24 @@ define(function (require) {
      }
   };
 
-  const makeResponse = function (host, request, response) {
+  const verifyCreateObject = function (object) {
+    var keys = Object.keys(object);
+    for ( let i = 0; i < crossDomainManager.keys; i++ ) {
+      if ( keys.indexOf(crossDomainManager.keys[i]) > -1 ) {
+        continue;
+      } else {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const makeResponse = function (event, request, response) {
     var res = {
       request : request,
       response : response
     };
-    var iFrame = crossDomainManager.iframes[host];
-    iFrame.contentWindow.postMessage(JSON.stringify(res), host);
+    event.source.postMessage(JSON.stringify(res), '*');
   };
 
   const initializePostApi = function (centerObject) {
@@ -77,13 +89,24 @@ define(function (require) {
         if (verifyOrigin(event.origin, dataObject.method, centerObject)) {
           switch (dataObject.method) {
             case 'create':
+              for ( let i = 0; i< dataObject.query.length; i ++ ) {
+                if( !verifyCreateObject(dataObject.query[i]) ) {
+                  var res = {
+                    status : 'failure',
+                    error : 'Object is not in given scheme!'
+                  };
+                  makeResponse(event, dataObject, res);
+                  return;
+                }
+              }
+              //TODO insert value into local database
               var response = {
                 status: 'success',
                 data : []
               };
-              makeResponse(event.origin, dataObject, response);
-              console.log('Created value: ', dataObject.query);
-              //TODO insert value into local database
+              makeResponse(event, dataObject, response);
+              console.log('Created values: ', dataObject.query);
+              return;
                   break;
             case 'read':
               console.log('Read value: ', dataObject.query);
@@ -105,7 +128,8 @@ define(function (require) {
             status : 'failure',
             error : 'Method not allowed'
           };
-          makeResponse(event.origin, dataObject, res);
+          makeResponse(event, dataObject, res);
+          return;
         }
       };
 
