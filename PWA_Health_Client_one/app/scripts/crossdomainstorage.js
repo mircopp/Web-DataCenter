@@ -9,8 +9,6 @@ function CrossDomainStorage(origin){
     this._queue = [];
     this._requests = {};
     this._id = 0;
-    this._callbackMethodHandler = callbackhandler;
-    this._callbackMethodHandler.init('snackbar');
 }
 
 CrossDomainStorage.prototype = {
@@ -87,28 +85,11 @@ CrossDomainStorage.prototype = {
     },
 
     _handleMessage: function(event){
-        if (event.origin == this.origin){
-          var data = JSON.parse(event.data);
-          switch ( data.request.method ) {
-            case 'create':
-              this._callbackMethodHandler.createCallback(data.request, data.response);
-                  break;
-            case 'read':
-              console.log('Read value: ', dataObject.query);
-              // TODO work with read response
-                  break;
-            case 'update':
-              console.log('Updated value: ', dataObject.query);
-              //TODO handle update response
-                  break;
-            case 'delete':
-              console.log('Deleted value: ', dataObject.query);
-              // TODO handle delete respone
-                  break;
-            default:
-              break;
-          }
-        }
+      if (event.origin == this.origin){
+        var data = JSON.parse(event.data);
+        this._requests[data.request.id].callback(data.request, data.response);
+        delete this._requests[data.request.id];
+      }
     }
 
 };

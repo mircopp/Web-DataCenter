@@ -15,11 +15,12 @@ define(function (require) {
     util: new Util(),
     iframes: {},
     origin : location.origin,
-    keys : ['type', 'timestamp', 'unit', 'deviceID', 'values']
+    keys : []
   };
 
 
-  crossDomainManager.init = function () {
+  crossDomainManager.init = function (keys=['type', 'timestamp', 'unit', 'deviceID', 'values']) {
+    crossDomainManager.keys = keys;
     crossDomainManager.dbApi = new Database();
     crossDomainManager.knownHosts = [];
     crossDomainManager.hostSettings = {};
@@ -40,9 +41,14 @@ define(function (require) {
       })
       .then(function () {
         initializePostApi(crossDomainManager);
+        crossDomainManager.setCreateHandler();
         return Promise.resolve([crossDomainManager.iframes, crossDomainManager.knownHosts]);
       });
   };
+
+  crossDomainManager.setCreateHandler = function (method=createHandler) {
+    crossDomainManager.createHandler = method;
+  }
 
 
 
@@ -75,6 +81,27 @@ define(function (require) {
     return true;
   };
 
+  const createHandler = function (event, dataObject) {
+    let res = {status:'success'};
+    for ( let i = 0; i< dataObject.query.length; i ++ ) {
+      if( !verifyCreateObject(dataObject.query[i]) ) {
+        res = {
+          status : 'failure',
+          error : 'Object is not in given scheme!'
+        };
+        makeResponse(event, dataObject, res);
+        return;
+      }
+    }
+    crossDomainManager.dbApi.insertData(dataObject.query)
+      .then(function (res) {
+        res.data = [];
+        makeResponse(event, dataObject, res);
+        console.log('Created values: ', dataObject.query);
+        return;
+      });
+  };
+
   const makeResponse = function (event, request, response) {
     var res = {
       request : request,
@@ -89,24 +116,7 @@ define(function (require) {
         if (verifyOrigin(event.origin, dataObject.method, centerObject)) {
           switch (dataObject.method) {
             case 'create':
-              for ( let i = 0; i< dataObject.query.length; i ++ ) {
-                if( !verifyCreateObject(dataObject.query[i]) ) {
-                  var res = {
-                    status : 'failure',
-                    error : 'Object is not in given scheme!'
-                  };
-                  makeResponse(event, dataObject, res);
-                  return;
-                }
-              }
-              //TODO insert value into local database
-              var response = {
-                status: 'success',
-                data : []
-              };
-              makeResponse(event, dataObject, response);
-              console.log('Created values: ', dataObject.query);
-              return;
+              crossDomainManager.createHandler(event, dataObject);
                   break;
             case 'read':
               console.log('Read value: ', dataObject.query);
