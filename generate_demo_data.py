@@ -12,19 +12,39 @@ def generate_heartrate_data ():
     dates = []
     for day in rrule.rrule(rrule.DAILY, dtstart=date_start,
                            until=date_end):
-        dates.append(day.strftime('%Y-%m-%d %H:%M:%S'))
+        dates.append(day)
     result = []
     for day in dates:
-        value_dict = {
+        value_dict1 = {
             'type': 'Heartrate',
             'unit': 'bpm',
-            'timestamp': day,
+            'timestamp': day.strftime('%Y-%m-%dT%H:%M:%S.%f'),
             'deviceID': '123456789abc',
             'values': {
                 'val': 60 + randint(0, 90)
             }
         }
-        result.append(value_dict)
+        value_dict2 = {
+            'type': 'Heartrate',
+            'unit': 'bpm',
+            'timestamp': (day + timedelta(hours=6)).strftime('%Y-%m-%dT%H:%M:%S.%f'),
+            'deviceID': '123456789abc',
+            'values': {
+                'val': 60 + randint(0, 90)
+            }
+        }
+        value_dict3 = {
+            'type': 'Heartrate',
+            'unit': 'bpm',
+            'timestamp': (day + timedelta(hours=9)).strftime('%Y-%m-%dT%H:%M:%S.%f'),
+            'deviceID': '123456789abc',
+            'values': {
+                'val': 60 + randint(0, 90)
+            }
+        }
+        result.append(value_dict1)
+        result.append(value_dict2)
+        result.append(value_dict3)
     return result
 
 

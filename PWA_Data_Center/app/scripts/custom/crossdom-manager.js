@@ -42,13 +42,18 @@ define(function (require) {
       .then(function () {
         initializePostApi(crossDomainManager);
         crossDomainManager.setCreateHandler();
+        crossDomainManager.setReadHandler();
         return Promise.resolve([crossDomainManager.iframes, crossDomainManager.knownHosts]);
       });
   };
 
   crossDomainManager.setCreateHandler = function (method=createHandler) {
     crossDomainManager.createHandler = method;
-  }
+  };
+
+  crossDomainManager.setReadHandler = function (method=readHandler) {
+    crossDomainManager.readHandler = method;
+  };
 
 
 
@@ -102,6 +107,41 @@ define(function (require) {
       });
   };
 
+  const verifyReadObject = function (query) {
+    if ( query.length !== 1 ) {
+      return false;
+    }
+    var keys = Object.keys(query[0]);
+    if ( keys.length !== 1 ) {
+      return false;
+    }
+    if ( keys[0] !== 'type' ) {
+      return false;
+    }
+    return true;
+  };
+
+  const readHandler = function (event, dataObject) {
+    let response = {status:'success'};
+    if( !verifyReadObject(dataObject.query) ) {
+      response = {
+        status : 'failure',
+        error : 'Object is not in given scheme!'
+      };
+      makeResponse(event, dataObject, response);
+      return;
+    }
+    var queryId = dataObject.query[0].type;
+    crossDomainManager.dbApi.readData(queryId)
+      .then(function (res) {
+        response.message = 'Successfully fetched data';
+        response.data = res.data;
+        makeResponse(event, dataObject, response);
+        console.log('Found values: ', res);
+        return;
+      });
+  };
+
   const makeResponse = function (event, request, response) {
     var res = {
       request : request,
@@ -119,8 +159,7 @@ define(function (require) {
               crossDomainManager.createHandler(event, dataObject);
                   break;
             case 'read':
-              console.log('Read value: ', dataObject.query);
-              // TODO read value from database
+              crossDomainManager.readHandler(event, dataObject);
                   break;
             case 'update':
               console.log('Updated value: ', dataObject.query);
