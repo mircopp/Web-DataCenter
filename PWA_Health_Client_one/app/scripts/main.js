@@ -75,17 +75,15 @@
   // Your custom JavaScript goes here
 
   var centerOrigin = 'https://localhost:3000';
-  var domainManager = new CrossDomainStorage(centerOrigin);
+  var domainManager = new CrossDomainStorage(centerOrigin, 'api');
   var currentDevice = '123456789abc';
-  domainManager.init();
   callbackhandler.init('snackbar');
-  console.log('initialized');
 
   document.querySelector('#visit').setAttribute('href', centerOrigin);
 
   document.querySelector('#uploadHeartrate').onclick = function (e) {
     e.preventDefault();
-    domainManager.init();
+    domainManager.reConnect();
     var input = parseFloat(document.querySelector('#heartrateInput').value);
     if (input==null || isNaN(input)) {
       alert('Not a valid heartrate!');
@@ -109,7 +107,7 @@
   };
   document.querySelector('#uploadSteps').onclick = function (e) {
     e.preventDefault();
-    domainManager.init();
+    domainManager.reConnect();
     var input = parseFloat(document.querySelector('#stepsInput').value);
     if (input==null || isNaN(input)) {
       alert('Not a valid step number!');
@@ -134,7 +132,7 @@
 
   document.querySelector('#readHeartrate').onclick = function (e) {
     e.preventDefault();
-    domainManager.init();
+    domainManager.reConnect();
     var object = {
       method : 'read',
       query : [
@@ -148,7 +146,7 @@
 
   document.querySelector('#readSteps').onclick = function (e) {
     e.preventDefault();
-    domainManager.init();
+    domainManager.reConnect();
     var object = {
       method : 'read',
       query : [

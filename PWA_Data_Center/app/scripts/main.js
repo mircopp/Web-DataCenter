@@ -80,31 +80,29 @@ define (function(require){
   // import requirements
   // import objects
   const $ = require('jquery');
-  const dataStorageHub = require('crossDomainManager');
+  const crossDomainDataManager = require('crossDomainManager');
 
 
   // import constructors
   const Util = require('Util');
-  const util = new Util();
-  const Database = require('DatabaseRequestHandler');
-  const database = new Database();
-
+  const util = new Util(crossDomainDataManager);
 
   const app = {
-
+    iframes : {}
   };
 
-  dataStorageHub.init()
+  crossDomainDataManager.getKnownHosts()
     .then(function (res) {
-      app.iframes = res [0];
-      app.knownHosts = res [1];
+      app.knownHosts = res;
       for ( let i = 0; i < app.knownHosts.length; i++) {
         var host = app.knownHosts[i];
-        database.getSettingsOfHost(host).then(function (doc) {
-          var name = util.insertSettingsContainer('settings', doc._id);
-          util.insertMdlList(name, doc.methods);
-          util.addEventHandlerForSettingBoxes();
-        });
+        app.iframes[app.knownHosts[i]] = util.createIFrame(app.knownHosts[i]);
+        crossDomainDataManager.getSettingsOfHost(host)
+          .then(function (doc) {
+            var name = util.insertSettingsContainer('settings', doc._id);
+            util.insertMdlList(name, doc.methods);
+            util.addEventHandlerForSettingBoxes();
+          });
       }
     });
 });

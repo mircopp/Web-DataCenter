@@ -85,6 +85,7 @@ CrossDomainStorage.prototype = {
     },
 
     _handleMessage: function(event){
+      console.log(event.origin);
       if (event.origin == this.origin){
         var data = JSON.parse(event.data);
         this._requests[data.request.id].callback(data.request, data.response);

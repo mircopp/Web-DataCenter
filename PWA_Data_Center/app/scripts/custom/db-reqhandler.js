@@ -15,8 +15,6 @@ define(function (require) {
 
   DatabaseRequestHandler.prototype = {
 
-    // working with settings database
-
     getKnownHosts : function () {
       return this.settingsDB.allDocs();
     },
@@ -50,7 +48,6 @@ define(function (require) {
       });
     },
 
-    // inserting data
     readData: function (dataType, userId='test@test.com') {
       // TODO refinement and user identification
       return this.personalData.get(dataType);
@@ -110,9 +107,9 @@ define(function (require) {
                 res.doc._id = type;
                 that.personalData.put(res.doc);
                 res.message = 'Successfully inserted';
-
               }
             }
+            console.log(res.doc);
             return Promise.resolve(res);
           });
       }

@@ -8,55 +8,90 @@
 define(function (require) {
 
   const Database = require('DatabaseRequestHandler');
-  const Util = require('Util');
 
-
-  const crossDomainManager = {
-    util: new Util(),
-    iframes: {},
-    origin : location.origin,
+  const crossDomainDataManager = {
+    origin : location.href,
+    dbApi : new Database(),
+    knownHosts : [],
+    hostSettings : {},
     keys : []
   };
 
+  // public methods
 
-  crossDomainManager.init = function (keys=['type', 'timestamp', 'unit', 'deviceID', 'values']) {
-    crossDomainManager.keys = keys;
-    crossDomainManager.dbApi = new Database();
-    crossDomainManager.knownHosts = [];
-    crossDomainManager.hostSettings = {};
-    return crossDomainManager.dbApi.getKnownHosts()
-      .then(function (docs) {
-        crossDomainManager.knownHosts = crossDomainManager.knownHosts.concat(crossDomainManager.dbApi.extractKnownHosts(docs));
-      })
-      .then(function () {
-        for ( let i = 0; i < crossDomainManager.knownHosts.length; i++) {
-          crossDomainManager.iframes[crossDomainManager.knownHosts[i]] = (crossDomainManager.util.createIFrame(crossDomainManager.knownHosts[i]));
-          crossDomainManager.dbApi.getSettingsOfHost(crossDomainManager.knownHosts[i]).then(function (doc) {
-            let id = doc._id;
-            delete doc['_id'];
-            delete doc['_rev'];
-            crossDomainManager.hostSettings[id] = doc;
-          });
+  crossDomainDataManager.init = function (keys=['type', 'timestamp', 'unit', 'deviceID', 'values']) {
+    crossDomainDataManager.keys = keys;
+    crossDomainDataManager.setCreateHandler();
+    crossDomainDataManager.setReadHandler();
+    return crossDomainDataManager.getKnownHosts()
+      .then(function (res) {
+        for ( let i = 0; i < crossDomainDataManager.knownHosts.length; i++) {
+          crossDomainDataManager.getSettingsOfHost(crossDomainDataManager.knownHosts[i]);
         }
-      })
-      .then(function () {
-        initializePostApi(crossDomainManager);
-        crossDomainManager.setCreateHandler();
-        crossDomainManager.setReadHandler();
-        return Promise.resolve([crossDomainManager.iframes, crossDomainManager.knownHosts]);
+        return Promise.resolve(crossDomainDataManager.knownHosts);
       });
   };
 
-  crossDomainManager.setCreateHandler = function (method=createHandler) {
-    crossDomainManager.createHandler = method;
+  crossDomainDataManager.connect = function () {
+    initializePostApi(crossDomainDataManager);
   };
 
-  crossDomainManager.setReadHandler = function (method=readHandler) {
-    crossDomainManager.readHandler = method;
+  crossDomainDataManager.getSettingsOfHost = function (host) {
+    if (crossDomainDataManager.hostSettings[host]) {
+      var keys = Object.keys(crossDomainDataManager.hostSettings[host]);
+      var res = {
+        '_id' : host
+      };
+      for ( let i = 0; i < keys.length; i++ ) {
+       res[keys[i]] = crossDomainDataManager.hostSettings[host][keys[i]];
+      }
+      return Promise.resolve(res);
+    } else {
+      return crossDomainDataManager.dbApi.getSettingsOfHost(host)
+        .then(function (doc) {
+          setSettingsOfHost(doc);
+          var keys = Object.keys(crossDomainDataManager.hostSettings[host]);
+          var res = {
+            '_id' : host
+          };
+          for ( let i = 0; i < keys.length; i++ ) {
+           res[keys[i]] = crossDomainDataManager.hostSettings[host][keys[i]];
+          }
+          return Promise.resolve(res);
+        });
+    }
+  };
+
+  crossDomainDataManager.setSettingsOfHost = function (host, method, checked) {
+    return crossDomainDataManager.dbApi.setMethodOfHost(host, method, checked);
+  };
+
+  crossDomainDataManager.getKnownHosts = function () {
+    return crossDomainDataManager.dbApi.getKnownHosts()
+      .then(function (docs) {
+        crossDomainDataManager.knownHosts = crossDomainDataManager.knownHosts.concat(crossDomainDataManager.dbApi.extractKnownHosts(docs));
+        return crossDomainDataManager.knownHosts;
+      });
+  };
+
+  crossDomainDataManager.setCreateHandler = function (method=createHandler) {
+    crossDomainDataManager.createHandler = method;
+  };
+
+  crossDomainDataManager.setReadHandler = function (method=readHandler) {
+    crossDomainDataManager.readHandler = method;
   };
 
 
 
+  // private methods
+
+  const setSettingsOfHost = function (doc) {
+    let id = doc._id;
+    delete doc['_id'];
+    delete doc['_rev'];
+    crossDomainDataManager.hostSettings[id] = doc;
+  };
   /**
    * see https://www.nczonline.net/blog/2010/09/07/learning-from-xauth-cross-domain-localstorage/
    * @param event
@@ -76,8 +111,8 @@ define(function (require) {
 
   const verifyCreateObject = function (object) {
     var keys = Object.keys(object);
-    for ( let i = 0; i < crossDomainManager.keys; i++ ) {
-      if ( keys.indexOf(crossDomainManager.keys[i]) > -1 ) {
+    for ( let i = 0; i < crossDomainDataManager.keys; i++ ) {
+      if ( keys.indexOf(crossDomainDataManager.keys[i]) > -1 ) {
         continue;
       } else {
         return false;
@@ -92,13 +127,13 @@ define(function (require) {
       if( !verifyCreateObject(dataObject.query[i]) ) {
         res = {
           status : 'failure',
-          error : 'Object is not in given scheme!'
+          message : 'Object is not in given scheme!'
         };
         makeResponse(event, dataObject, res);
         return;
       }
     }
-    crossDomainManager.dbApi.insertData(dataObject.query)
+    crossDomainDataManager.dbApi.insertData(dataObject.query)
       .then(function (res) {
         res.data = [];
         makeResponse(event, dataObject, res);
@@ -126,18 +161,27 @@ define(function (require) {
     if( !verifyReadObject(dataObject.query) ) {
       response = {
         status : 'failure',
-        error : 'Object is not in given scheme!'
+        message : 'Object is not in given scheme!'
       };
       makeResponse(event, dataObject, response);
       return;
     }
     var queryId = dataObject.query[0].type;
-    crossDomainManager.dbApi.readData(queryId)
+    crossDomainDataManager.dbApi.readData(queryId)
+      .catch(function (err) {
+        return {data:[]};
+      })
       .then(function (res) {
-        response.message = 'Successfully fetched data';
-        response.data = res.data;
+        response.message = 'Successfully fetched data!';
+        if ( res.data.length > 0 ) {
+          response.data = res.data;
+
+        } else {
+          response.status = 'failure';
+          response.message = 'No data found!';
+          response.data = [];
+        }
         makeResponse(event, dataObject, response);
-        console.log('Found values: ', res);
         return;
       });
   };
@@ -156,10 +200,10 @@ define(function (require) {
         if (verifyOrigin(event.origin, dataObject.method, centerObject)) {
           switch (dataObject.method) {
             case 'create':
-              crossDomainManager.createHandler(event, dataObject);
+              crossDomainDataManager.createHandler(event, dataObject);
                   break;
             case 'read':
-              crossDomainManager.readHandler(event, dataObject);
+              crossDomainDataManager.readHandler(event, dataObject);
                   break;
             case 'update':
               console.log('Updated value: ', dataObject.query);
@@ -175,7 +219,7 @@ define(function (require) {
         } else {
           var res = {
             status : 'failure',
-            error : 'Method not allowed'
+            message : 'Method not allowed'
           };
           makeResponse(event, dataObject, res);
           return;
@@ -189,5 +233,5 @@ define(function (require) {
       }
   };
 
-  return crossDomainManager;
+  return crossDomainDataManager;
 });

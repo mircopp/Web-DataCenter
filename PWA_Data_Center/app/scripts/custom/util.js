@@ -6,12 +6,10 @@
 
 define(function (require) {
 
-  const Database = require('DatabaseRequestHandler');
-
-  function Util() {
+  function Util(storageHub) {
     this.boxes = [];
-    this.database = new Database();
     this.$ = require('jquery');
+    this.dataStorageHub = storageHub;
   }
 
   Util.prototype = {
@@ -52,7 +50,7 @@ define(function (require) {
           var host = temp[1];
           var method = temp[0];
           var checked = event.target.checked;
-          that.database.setMethodOfHost(host,method, checked);
+          that.dataStorageHub.setSettingsOfHost(host,method, checked);
         };
         input.addEventListener('change', handlerMethod);
       }

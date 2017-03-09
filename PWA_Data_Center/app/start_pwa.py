@@ -11,6 +11,11 @@ def index():
     abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'index.html'))
     return Response(open(abs_path).read(), mimetype='text/html')
 
+@app.route('/api')
+def api():
+    abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'api.html'))
+    return Response(open(abs_path).read(), mimetype='text/html')
+
 @app.route('/<path:path>')
 def main_file(path):
     abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), path))
@@ -65,6 +70,12 @@ def service_worker():
 def config():
     abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'config.js'))
     return Response(open(abs_path).read(), mimetype='application/javascript')
+
+@app.route('/config_api.js')
+def config_api():
+    abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'config_api.js'))
+    return Response(open(abs_path).read(), mimetype='application/javascript')
+
 
 @app.route('/manifest.json')
 def manifest():

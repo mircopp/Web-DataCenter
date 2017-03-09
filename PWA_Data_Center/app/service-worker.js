@@ -8,9 +8,12 @@
 var cacheName = 'PWA_Data_center_cache';
 var systemDependantFiles = [
   '/',
-  'config.js',
+  '/config.js',
   '/manifest.json',
   '/index.html',
+  '/api',
+  '/api.html',
+  '/config_api.js',
   '/scripts/main.js',
   '/scripts/lib/jquery-3.1.1.js',
   '/scripts/lib/r.js',
