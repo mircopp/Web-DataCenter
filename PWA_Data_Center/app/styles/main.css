@@ -179,9 +179,6 @@ html, body {
 .mdl-demo .mdl-card .mdl-card__supporting-text > h3:first-child {
   margin-bottom: 24px;
 }
-.mdl-demo .mdl-layout__tab-panel:not(#overview) {
-  background-color: white;
-}
 .mdl-demo #features section {
   margin-bottom: 72px;
 }
@@ -242,5 +239,8 @@ html, body {
 .mdl-card {
   background-color: white;
 }
-
+.center {
+  margin-left: auto;
+  margin-right: auto;
+}
 

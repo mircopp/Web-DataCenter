@@ -65,10 +65,7 @@ CrossDomainStorage.prototype = {
     };
 
     if (this._iframeReady){
-      var that = this;
-      setTimeout(function () {
-        that._sendRequest(data);
-      }, 3000);
+        this._sendRequest(data);
     } else {
         this._queue.push(data);
     }
@@ -81,7 +78,10 @@ CrossDomainStorage.prototype = {
   //private methods
   _sendRequest: function(data){
     this._requests[data.request.id] = data;
-    this._iframe.contentWindow.postMessage(JSON.stringify(data.request), '*');
+    var that = this;
+    setTimeout(function () {
+      that._iframe.contentWindow.postMessage(JSON.stringify(data.request), '*');
+    }, 2000);
   },
 
   _iframeLoaded: function(){

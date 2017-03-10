@@ -57,17 +57,25 @@ define(function (require) {
     },
 
     insertSettingsContainer: function (containerId, name) {
-      var container = '<section class="section--center mdl-grid mdl-shadow--2dp">' +
-        '<h4 class="mdl-cell mdl-cell--12-col">' + name + '</h4>' +
-        '<div class="mdl-card mdl-cell mdl-cell--12-col"> ' +
+      var container = document.querySelector('#' + containerId);
+      if (!container.querySelector('section')) {
+        var html = '<section class="section--center mdl-grid">' +
+          '</section>';
+        container.innerHTML += html;
+      }
+      var settingsContainer = container.querySelector('section');
+      var settings = '<div class="mdl-card mdl-cell mdl-cell--4-col mdl-shadow--4dp"> ' +
+        '<div class="mdl-card__title">' +
+          '<h2 class="mdl-card__title-text center" style="color: dimgrey ;">' + name + '</h2>' +
+        '</div>' +
+        '<hr>' +
         '<div class="mdl-card__supporting-text"> ' +
         '<div id="' + name + '">' +
         '</div> ' +
         '</div> ' +
-        '</div>' +
-        '</section>';
+        '</div>';
 
-      document.getElementById(containerId).innerHTML += container;
+      settingsContainer.innerHTML += settings;
       return name;
     },
 
@@ -85,6 +93,28 @@ define(function (require) {
         '</section>';
       container.innerHTML += html;
       return document.getElementById(host.split('//')[1] + 'Frame');
+    },
+
+    createIcon : function (host) {
+      var container = document.querySelector('#apps');
+      if (!container.querySelector('section')) {
+        var html = '<section class="section--center mdl-grid">' +
+          '</section>';
+        container.innerHTML += html;
+      }
+      var section = container.querySelector('section');
+      var icon = '<div class="mdl-card mdl-cell mdl-cell--2-col mdl-shadow--4dp">' +
+        '<div class="mdl-card__title">' +
+          '<h2 class="mdl-card__title-text center" style="color: dimgrey ;">' + host + '</h2>' +
+        '</div>' +
+        '<div class="mdl-card__supporting-text"> ' +
+        '<img src="' + host + '/icon.png" alt="' + host +'" style="height: 100%; width: 100%; max-height: 256px;">' +
+        '</div>' +
+        '<div class="mdl-card__actions mdl-shadow--2dp" style="margin-top: 10px"> ' +
+          '<a target="_blank" href="' + host + '" class="mdl-button"><i class="material-icons">send</i> Start app</a> ' +
+        '</div>' +
+        '</div>';
+      section.innerHTML = icon;
     }
   };
 
