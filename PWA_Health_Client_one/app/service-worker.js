@@ -10,6 +10,7 @@ var systemDependantFiles = [
   '/',
   '/manifest.json',
   '/index.html',
+  '/icon.png',
   '/scripts/main.js',
   '/scripts/jquery-3.1.1.js',
   '/styles/main.css',

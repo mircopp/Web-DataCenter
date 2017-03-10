@@ -82,6 +82,11 @@ def manifest():
     abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'manifest.json'))
     return Response(open(abs_path).read(), mimetype='application/json')
 
+@app.route('/icon.png')
+def icon():
+    abs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'icon.png'))
+    return Response(open(abs_path, 'rb').read(), mimetype='application/json')
+
 
 
 if __name__ == '__main__':

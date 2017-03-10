@@ -108,7 +108,7 @@ define(function (require) {
           '<h2 class="mdl-card__title-text center" style="color: dimgrey ;">' + host + '</h2>' +
         '</div>' +
         '<div class="mdl-card__supporting-text"> ' +
-        '<img src="' + host + '/icon.png" alt="' + host +'" style="height: 100%; width: 100%; max-height: 256px;">' +
+        '<img src="' + host + '/icon.png" alt="' + host +'" onerror="javascript:this.src=\'icon.png\'" style="height: 100%; width: 100%; max-height: 256px;">' +
         '</div>' +
         '<div class="mdl-card__actions mdl-shadow--2dp" style="margin-top: 10px"> ' +
           '<a target="_blank" href="' + host + '" class="mdl-button"><i class="material-icons">send</i> Start app</a> ' +
