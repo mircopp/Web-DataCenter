@@ -44,7 +44,7 @@ CrossDomainStorage.prototype = {
 
     },
 
-    requestValue: function(json, callback){
+    _request: function(json, callback){
       var request = {
         id: ++this._id
       };

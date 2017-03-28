@@ -1,0 +1,47 @@
+{
+  "readRequest" : {
+    "method" : "create",
+    "id_token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ",
+    "query" : [{
+      "type" : "Heartrate"
+    }]
+  },
+  "readResponse" : {
+    "request" : {
+      "id" : 1,
+      "method" : "read",
+      "id_token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ",
+      "query" : [{
+        "type" : "Heartrate"
+      }]
+    },
+    "response" : {
+      "status" : "success",
+      "message" : "Successfully fetched data!",
+      "dataObjects" : [
+        {
+          "type" : "Heartrate",
+          "unit" : "bpm",
+          "timestamp" : {
+            "format" : "isoDate",
+            "value" : "2017-03-09T20:43:05.229Z"
+          },
+          "deviceID" : "123456789abc",
+          "valueObjects" : {
+            "frequency" : 150
+          }
+        } , {
+          "type" : "Heartrate",
+          "unit" : "bpm",
+          "timestamp" : {
+            "format" : "isoDate",
+            "value" : "2017-03-09T20:43:22.518Z"
+          },
+          "deviceID" : "123456789abc",
+          "valueObjects" : {
+            "frequency" : 170
+          }}
+      ]
+    }
+  }
+}

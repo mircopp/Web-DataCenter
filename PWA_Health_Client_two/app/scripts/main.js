@@ -104,7 +104,7 @@
           }
         ]
       };
-      domainManager.requestValue(req, callbackhandler.createCallback);
+      domainManager._request(req, callbackhandler.createCallback);
     }
   };
   document.querySelector('#uploadSteps').onclick = function (e) {
@@ -128,7 +128,7 @@
           }
         ]
       };
-      domainManager.requestValue(req, callbackhandler.createCallback);
+      domainManager._request(req, callbackhandler.createCallback);
     }
   };
 
@@ -143,7 +143,7 @@
         }
       ]
     };
-    domainManager.requestValue(object, callbackhandler.readHeartrateCallback);
+    domainManager._request(object, callbackhandler.readHeartrateCallback);
   };
 
   document.querySelector('#readSteps').onclick = function (e) {
@@ -157,6 +157,6 @@
         }
       ]
     };
-    domainManager.requestValue(object, callbackhandler.readStepsCallback);
+    domainManager._request(object, callbackhandler.readStepsCallback);
   };
 })();

@@ -103,7 +103,7 @@ define(function (require) {
         container.innerHTML += html;
       }
       var section = container.querySelector('section');
-      var icon = '<div class="mdl-card mdl-cell mdl-cell--2-col mdl-shadow--4dp">' +
+      var icon = '<div class="mdl-card mdl-cell mdl-cell--3-col mdl-shadow--4dp">' +
         '<div class="mdl-card__title">' +
           '<h2 class="mdl-card__title-text center" style="color: dimgrey ;">' + host + '</h2>' +
         '</div>' +
@@ -114,7 +114,7 @@ define(function (require) {
           '<a target="_blank" href="' + host + '" class="mdl-button"><i class="material-icons">send</i> Start app</a> ' +
         '</div>' +
         '</div>';
-      section.innerHTML = icon;
+      section.innerHTML += icon;
     }
   };
 

@@ -30,7 +30,9 @@ CrossDomainStorage.prototype = {
 
               if (window.addEventListener) {
                 this._iframe.addEventListener("load", function () {
-                  that._iframeLoaded();
+                  setTimeout(function() {
+                    that._iframeLoaded();
+                  }, 100);
                 }, true);
                 window.addEventListener("message", function(event) {
                   that._handleMessage(event);
@@ -51,7 +53,16 @@ CrossDomainStorage.prototype = {
     this._iframe.src = this.origin + '/' + this.appendix;
   },
 
-  requestValue: function(json, callback){
+  sendCreateRequest: function (userToken, dataObjects, callbackMethods) {
+    var requestJSON = {
+      method : 'create',
+      id_token: userToken,
+      query: dataObjects
+    };
+    this._request(requestJSON, callbackMethods);
+  },
+
+  _request: function(json, callback){
     var request = {
       id: ++this._id
     };

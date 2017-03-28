@@ -191,6 +191,7 @@ define(function (require) {
       request : request,
       response : response
     };
+    console.log(JSON.stringify(res));
     event.source.postMessage(JSON.stringify(res), '*');
   };
 

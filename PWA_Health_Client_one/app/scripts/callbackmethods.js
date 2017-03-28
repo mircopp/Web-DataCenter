@@ -20,8 +20,8 @@ callbackhandler.createCallback = function (request, response) {
 };
 
 callbackhandler.readHeartrateCallback = function (request, response) {
-  var data = {message: response.message, timeout: 5000};
-  callbackhandler.snackbarContainer.MaterialSnackbar.showSnackbar(data);
+  var message = {message: response.message, timeout: 5000};
+  callbackhandler.snackbarContainer.MaterialSnackbar.showSnackbar(message);
   if ( response.status === 'success' ) {
     var data = response.data;
     highchartsFunctions.createHeartratechart('heartrateContainer', data);
