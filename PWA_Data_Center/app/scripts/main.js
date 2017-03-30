@@ -87,23 +87,33 @@ define (function(require){
   const Util = require('Util');
   const util = new Util(crossDomainDataManager);
 
+  const auth0Lock = require('auth0Connector');
+
   const app = {
 
   };
 
-  crossDomainDataManager.getKnownHosts()
+  var callbackFunction = function () {
+    var userID = JSON.parse(localStorage.getItem('profile')).email;
+    crossDomainDataManager.getKnownHosts(userID)
     .then(function (res) {
       app.knownHosts = res;
       for ( let i = 0; i < app.knownHosts.length; i++) {
         var host = app.knownHosts[i];
         util.createIcon(app.knownHosts[i]);
-        crossDomainDataManager.getSettingsOfHost(host)
+        crossDomainDataManager.getSettingsOfHost(host, userID)
           .then(function (doc) {
-            var name = util.insertSettingsContainer('settings', doc._id);
+            var name = util.insertSettingsContainer('settings', doc.host);
             util.insertMdlList(name, doc.methods);
-            util.addEventHandlerForSettingBoxes();
+            util.addEventHandlerForSettingBoxes(userID);
           });
       }
     });
+  };
+
+  auth0Lock.setInitialState(callbackFunction);
+
+
+
 });
 

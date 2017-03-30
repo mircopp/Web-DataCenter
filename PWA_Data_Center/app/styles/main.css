@@ -244,3 +244,6 @@ html, body {
   margin-right: auto;
 }
 
+.wraptocenter {
+  text-align: center;
+}

@@ -17,8 +17,6 @@ requirejs.config({
 });
 
 requirejs(['crossDomainManager'],function(crossDomainManager){
-  crossDomainManager.init()
-    .then(function (res) {
-      crossDomainManager.connect();
-    });
+  crossDomainManager.init();
+  crossDomainManager.connect();
 });

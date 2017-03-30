@@ -18,19 +18,28 @@ define(function (require) {
     getKnownHosts : function () {
       return this.settingsDB.allDocs();
     },
-    extractKnownHosts : function (documents) {
+    extractKnownHosts : function (documents, userID) {
       const res = [];
       for ( let i = 0; i < documents.rows.length; i++ ) {
-        res.push(documents.rows[i].id);
+        var current = documents.rows[i].id.split('|');
+        if (userID){
+          if (current[1] && (current[1] === userID)) {
+            res.push(current[0]);
+          }
+        } else {
+          res.push(current[0]);
+        }
       }
       return res;
     },
-    getSettingsOfHost : function (hostName) {
-      return this.settingsDB.get(hostName);
+    getSettingsOfHost : function (hostName, userID) {
+      return this.settingsDB.get(hostName + '|' + userID);
     },
-    insertNewHost : function (hostName) {
+    insertNewHost : function (hostName, userID) {
       return this.settingsDB.put({
-        _id : hostName,
+        _id : hostName + '|' + userID,
+        host: hostName,
+        userID : userID,
         methods : {
           create : false,
           read : false,
@@ -39,9 +48,9 @@ define(function (require) {
         }
       });
     },
-    setMethodOfHost: function (host, method, setting) {
+    setMethodOfHost: function (host, userID, method, setting) {
       var db = this.settingsDB;
-      return db.get(host)
+      return db.get(host + '|' + userID)
         .then(function (doc) {
           doc.methods[method] = setting;
           return db.put(doc);
@@ -79,7 +88,6 @@ define(function (require) {
             response.type = dataObjects[0].type;
             for ( let i = 0; i < dataObjects.length; i++ ) {
               if (contains(doc.data, dataObjects[i])) {
-                console.log('contains');
                 response.duplicates.push(dataObjects.splice(i,1));
                 --i;
               } else {
@@ -109,7 +117,6 @@ define(function (require) {
                 res.message = 'Successfully inserted';
               }
             }
-            console.log(res.doc);
             return Promise.resolve(res);
           });
       }

@@ -39,7 +39,7 @@ define(function (require) {
       document.getElementById(containerId).innerHTML += list;
     },
 
-    addEventHandlerForSettingBoxes: function () {
+    addEventHandlerForSettingBoxes: function (userID) {
       var that = this;
       this.boxes = document.querySelectorAll('ul .mdl-data-select');
       for ( let i = 0; i < this.boxes.length; i++ ) {
@@ -50,7 +50,7 @@ define(function (require) {
           var host = temp[1];
           var method = temp[0];
           var checked = event.target.checked;
-          that.dataStorageHub.setSettingsOfHost(host,method, checked);
+          that.dataStorageHub.setSettingsOfHost(host, userID, method, checked);
         };
         input.addEventListener('change', handlerMethod);
       }
@@ -105,10 +105,10 @@ define(function (require) {
       var section = container.querySelector('section');
       var icon = '<div class="mdl-card mdl-cell mdl-cell--3-col mdl-shadow--4dp">' +
         '<div class="mdl-card__title">' +
-          '<h2 class="mdl-card__title-text center" style="color: dimgrey ;">' + host + '</h2>' +
+          '<h3 class="mdl-card__title-text center" style="color: dimgrey ; width: inherit;">' + host + '</h3>' +
         '</div>' +
-        '<div class="mdl-card__supporting-text"> ' +
-        '<img src="' + host + '/icon.png" alt="' + host +'" onerror="javascript:this.src=\'icon.png\'" style="height: 100%; width: 100%; max-height: 256px;">' +
+        '<div class="mdl-card__supporting-text wraptocenter"> ' +
+        '<img src="' + host + '/icon.png" alt="' + host +'" onerror="javascript:this.src=\'icon.png\'" style="width:100%;">' +
         '</div>' +
         '<div class="mdl-card__actions mdl-shadow--2dp" style="margin-top: 10px"> ' +
           '<a target="_blank" href="' + host + '" class="mdl-button"><i class="material-icons">send</i> Start app</a> ' +

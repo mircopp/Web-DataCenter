@@ -12,7 +12,14 @@ requirejs.config({
       'pouchdb':                'lib/pouchdb-6.1.2',
       'Util' :                  'custom/util',
       'DatabaseRequestHandler': 'custom/db-reqhandler',
-      'crossDomainManager' :            'custom/crossdom-manager'
+      'crossDomainManager' :    'custom/crossdom-manager',
+      'auth0Connector' :        'custom/auth0connection',
+      'auth0-lock' :            '//cdn.auth0.com/js/lock/10.3.0/lock.min'
+    },
+    shim : {
+      'auth0' : {
+        exports : 'Auth0'
+      }
     }
 });
 

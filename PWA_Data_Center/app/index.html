@@ -31,6 +31,9 @@
     <!-- Color the status bar on mobile devices -->
     <meta name="theme-color" content="#2F3BA2">
 
+    <!-- Setting the right viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
     <!-- SEO: If your mobile URL is different from the desktop URL, add a canonical link to the desktop page https://developers.google.com/webmasters/smartphone-sites/feature-phones -->
     <!--
     <link rel="canonical" href="http://www.example.com/">
@@ -62,7 +65,17 @@
 
         color: white;
       }
-      </style>
+
+      #profile-button {
+        position: fixed;
+        display: block;
+        right: 0;
+        top: 0;
+        margin-right: 20px;
+        margin-top: 10px;
+        z-index: 900;
+      }
+    </style>
   </head>
   <body class="mdl-demo mdl-color--grey-100 mdl-color-text--grey-700 mdl-base">
     <div class=" mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs">
@@ -96,7 +109,16 @@
       </main>
     </div>
 
+      <button id="profile-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-color--accent mdl-color-text--accent-contrast">
+        <img alt="avatar" class="avatar" style="display:none; height: 100%; width: 100%">
+      </button>
+      <ul class="mdl-menu mdl-js-menu mdl-menu--bottom-right" for="profile-button">
+        <li id="username" class="mdl-menu__item"></li>
+        <li id="btn-logout" class="mdl-menu__item">Log Out</li>
+      </ul>
+
     <script src="https://code.getmdl.io/1.2.1/material.min.js"></script>
+    <script src="//cdn.auth0.com/js/lock/10.3.0/lock.min.js"></script>
 
     <!--import requirejs-->
     <script data-main="config" src="scripts/lib/r.js"></script>

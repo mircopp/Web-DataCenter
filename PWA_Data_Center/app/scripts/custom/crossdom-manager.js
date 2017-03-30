@@ -23,53 +23,68 @@ define(function (require) {
     crossDomainDataManager.keys = keys;
     crossDomainDataManager.setCreateHandler();
     crossDomainDataManager.setReadHandler();
-    return crossDomainDataManager.getKnownHosts()
-      .then(function (res) {
-        for ( let i = 0; i < crossDomainDataManager.knownHosts.length; i++) {
-          crossDomainDataManager.getSettingsOfHost(crossDomainDataManager.knownHosts[i]);
-        }
-        return Promise.resolve(crossDomainDataManager.knownHosts);
-      });
+    // return crossDomainDataManager.getKnownHosts()
+    //   .then(function (res) {
+    //     for ( let i = 0; i < crossDomainDataManager.knownHosts.length; i++) {
+    //       crossDomainDataManager.getSettingsOfHost(crossDomainDataManager.knownHosts[i]);
+    //     }
+    //     return Promise.resolve(crossDomainDataManager.knownHosts);
+    //   });
   };
 
   crossDomainDataManager.connect = function () {
     initializePostApi(crossDomainDataManager);
   };
 
-  crossDomainDataManager.getSettingsOfHost = function (host) {
-    if (crossDomainDataManager.hostSettings[host]) {
-      var keys = Object.keys(crossDomainDataManager.hostSettings[host]);
+  crossDomainDataManager.setKnownHosts = function (userID) {
+    return crossDomainDataManager.getKnownHosts(userID)
+      .then(function (res) {
+        for ( let i = 0; i < crossDomainDataManager.knownHosts.length; i++) {
+          crossDomainDataManager.getSettingsOfHost(crossDomainDataManager.knownHosts[i], userID);
+        }
+        return Promise.resolve(crossDomainDataManager.hostSettings);
+      });
+  };
+
+  crossDomainDataManager.getSettingsOfHost = function (host, userID) {
+    var id = host + '|' + userID;
+    if (crossDomainDataManager.hostSettings[id]) {
+      var keys = Object.keys(crossDomainDataManager.hostSettings[id]);
       var res = {
-        '_id' : host
+        '_id' : id,
+        'host' : host,
+        'userID' : userID
       };
       for ( let i = 0; i < keys.length; i++ ) {
-       res[keys[i]] = crossDomainDataManager.hostSettings[host][keys[i]];
+       res[keys[i]] = crossDomainDataManager.hostSettings[id][keys[i]];
       }
       return Promise.resolve(res);
     } else {
-      return crossDomainDataManager.dbApi.getSettingsOfHost(host)
+      return crossDomainDataManager.dbApi.getSettingsOfHost(host, userID)
         .then(function (doc) {
-          setSettingsOfHost(doc);
-          var keys = Object.keys(crossDomainDataManager.hostSettings[host]);
+          var temp = setSettingsOfHost(doc);
+          var keys = Object.keys(crossDomainDataManager.hostSettings[id]);
           var res = {
-            '_id' : host
+            '_id' : id,
+            'host' : host,
+            'userID' : userID
           };
           for ( let i = 0; i < keys.length; i++ ) {
-           res[keys[i]] = crossDomainDataManager.hostSettings[host][keys[i]];
+           res[keys[i]] = crossDomainDataManager.hostSettings[id][keys[i]];
           }
           return Promise.resolve(res);
         });
     }
   };
 
-  crossDomainDataManager.setSettingsOfHost = function (host, method, checked) {
-    return crossDomainDataManager.dbApi.setMethodOfHost(host, method, checked);
+  crossDomainDataManager.setSettingsOfHost = function (host, userID, method, checked) {
+    return crossDomainDataManager.dbApi.setMethodOfHost(host, userID, method, checked);
   };
 
-  crossDomainDataManager.getKnownHosts = function () {
+  crossDomainDataManager.getKnownHosts = function (userID) {
     return crossDomainDataManager.dbApi.getKnownHosts()
       .then(function (docs) {
-        crossDomainDataManager.knownHosts = crossDomainDataManager.knownHosts.concat(crossDomainDataManager.dbApi.extractKnownHosts(docs));
+        crossDomainDataManager.knownHosts = crossDomainDataManager.knownHosts.concat(crossDomainDataManager.dbApi.extractKnownHosts(docs, userID));
         return crossDomainDataManager.knownHosts;
       });
   };
@@ -90,23 +105,32 @@ define(function (require) {
     let id = doc._id;
     delete doc['_id'];
     delete doc['_rev'];
+    delete doc['userID'];
+    delete doc['host'];
     crossDomainDataManager.hostSettings[id] = doc;
   };
   /**
    * see https://www.nczonline.net/blog/2010/09/07/learning-from-xauth-cross-domain-localstorage/
    * @param event
    */
-  const verifyOrigin = function (origin, method, centerObject) {
-     if ( centerObject.knownHosts.indexOf(origin) > -1 ) {
-        if ( centerObject.hostSettings[origin].methods[method] ) {
-            return true;
-        } else {
-          return false;
-        }
-     } else {
-       centerObject.dbApi.insertNewHost(origin);
-       return false;
-     }
+  const verifyOrigin = function (origin, method, centerObject, userID) {
+    var protocol = origin.split('://') [0];
+    if (!protocol || (protocol !== 'https'))
+      return Promise.resolve([false, 'Origin has not the right protocol, given:' + protocol + ' , need: https']);
+    var id = origin + '|' + userID;
+    if ( centerObject.knownHosts.indexOf(origin) > -1 ) {
+      if (centerObject.hostSettings[id]) {
+        return Promise.resolve([centerObject.hostSettings[id].methods[method], 'Method allowed status: ' + centerObject.hostSettings[id].methods[method]]);
+      } else {
+        return centerObject.getSettingsOfHost(origin, userID)
+          .then(function (settings) {
+            return [settings.methods[method], 'Method allowed status: ' + settings.methods[method]];
+          })
+      }
+    } else {
+     centerObject.dbApi.insertNewHost(origin, userID);
+     return Promise.resolve([false, 'Application registered, Method not allowed']);
+    }
   };
 
   const verifyCreateObject = function (object) {
@@ -191,40 +215,50 @@ define(function (require) {
       request : request,
       response : response
     };
-    console.log(JSON.stringify(res));
     event.source.postMessage(JSON.stringify(res), '*');
   };
 
   const initializePostApi = function (centerObject) {
       const handleRequest = function (event) {
         const dataObject = JSON.parse(event.data);
-        if (verifyOrigin(event.origin, dataObject.method, centerObject)) {
-          switch (dataObject.method) {
-            case 'create':
-              crossDomainDataManager.createHandler(event, dataObject);
-                  break;
-            case 'read':
-              crossDomainDataManager.readHandler(event, dataObject);
-                  break;
-            case 'update':
-              console.log('Updated value: ', dataObject.query);
-              //TODO update value in database
-                  break;
-            case 'delete':
-              console.log('Deleted value: ', dataObject.query);
-              // TODO delete value in database
-                  break;
-            default:
-              break;
-          }
-        } else {
-          var res = {
-            status : 'failure',
-            message : 'Method not allowed'
-          };
-          makeResponse(event, dataObject, res);
-          return;
-        }
+        //TODO send id_token in data field described in bachelor thesis
+        var userID = verifyUserID('test@test.com');
+
+        crossDomainDataManager.setKnownHosts(userID)
+          .then(function (hosts) {
+            verifyOrigin(event.origin, dataObject.method, centerObject, userID)
+              .then(function (response) {
+                var originVerification = response;
+                if (originVerification[0]) {
+                  switch (dataObject.method) {
+                    case 'create':
+                      crossDomainDataManager.createHandler(event, dataObject);
+                          break;
+                    case 'read':
+                      crossDomainDataManager.readHandler(event, dataObject);
+                          break;
+                    case 'update':
+                      console.log('Updated value: ', dataObject.query);
+                      //TODO update value in database
+                          break;
+                    case 'delete':
+                      console.log('Deleted value: ', dataObject.query);
+                      // TODO delete value in database
+                          break;
+                    default:
+                      break;
+                  }
+                } else {
+                  var res = {
+                    status : 'failure',
+                    message : originVerification[1]
+                  };
+                  makeResponse(event, dataObject, res);
+                  return;
+                }
+              });
+          })
+
       };
 
       if(window.addEventListener){
@@ -232,6 +266,11 @@ define(function (require) {
       } else if (window.attachEvent){
           window.attachEvent("onmessage", handleRequest);
       }
+  };
+
+  const verifyUserID = function (id_token) {
+    // TODO verify userID with js
+    return 'test@test.com';
   };
 
   return crossDomainDataManager;
