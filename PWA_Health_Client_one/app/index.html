@@ -71,6 +71,15 @@
         margin-left: 50px;
         z-index: 900;
       }
+      #profile-button {
+        position: fixed;
+        display: block;
+        right: 0;
+        top: 0;
+        margin-right: 20px;
+        margin-top: 10px;
+        z-index: 900;
+      }
     </style>
   </head>
   <body class="mdl-demo mdl-color--grey-100 mdl-color-text--grey-700 mdl-base">
@@ -170,6 +179,15 @@
     <a id="visit" target="_blank" class="mdl-button mdl-js-button mdl-button--raised mdl-color--accent mdl-color-text--accent-contrast">Visit Data Center</a>
 
 
+    <button id="profile-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-color--accent mdl-color-text--accent-contrast">
+      <img alt="avatar" class="avatar" style="display:none; height: 100%; width: 100%">
+    </button>
+    <ul class="mdl-menu mdl-js-menu mdl-menu--bottom-right" for="profile-button">
+      <li id="username" class="mdl-menu__item"></li>
+      <li id="btn-logout" class="mdl-menu__item">Log Out</li>
+    </ul>
+
+
     <script src="https://code.getmdl.io/1.2.1/material.min.js"></script>
 
     <!--Chart JS imports from CDN-->
@@ -177,8 +195,11 @@
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
 
     <script src="scripts/jquery-3.1.1.js" type="application/javascript"></script>
+    <script src="//cdn.auth0.com/js/lock/10.3.0/lock.min.js"></script>
+
 
     <!-- build:js scripts/main.min.js -->
+    <script src="scripts/auth0connection.js" type="application/javascript"></script>
     <script src="scripts/crossdomainstorage.js" type="application/javascript"></script>
     <script src="scripts/callbackmethods.js" type="application/javascript"></script>
     <script src="scripts/main.js"></script>

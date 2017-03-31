@@ -88,8 +88,10 @@
     if (input==null || isNaN(input)) {
       alert('Not a valid heartrate!');
     } else {
+      var id_token = localStorage.getItem('id_token');
       var req = {
         method: 'create',
+        id_token : id_token,
         query: [
           {
             type: 'Heartrate',
@@ -112,8 +114,10 @@
     if (input==null || isNaN(input)) {
       alert('Not a valid step number!');
     } else {
+      var id_token = localStorage.getItem('id_token');
       var req = {
         method: 'create',
+        id_token : id_token,
         query: [
           {
             type: 'Steps',
@@ -133,8 +137,10 @@
   document.querySelector('#readHeartrate').onclick = function (e) {
     e.preventDefault();
     domainManager.reConnect();
+    var id_token = localStorage.getItem('id_token');
     var object = {
       method : 'read',
+      id_token : id_token,
       query : [
         {
           type : 'Heartrate'
@@ -147,8 +153,10 @@
   document.querySelector('#readSteps').onclick = function (e) {
     e.preventDefault();
     domainManager.reConnect();
+    var id_token = localStorage.getItem('id_token');
     var object = {
       method : 'read',
+      id_token : id_token,
       query : [
         {
           type : 'Steps'
@@ -157,4 +165,8 @@
     };
     domainManager._request(object, callbackhandler.readStepsCallback);
   };
+
+  auth0Connector.setInitialState(function () {
+    return;
+  });
 })();

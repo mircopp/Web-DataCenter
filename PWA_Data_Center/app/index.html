@@ -109,16 +109,18 @@
       </main>
     </div>
 
-      <button id="profile-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-color--accent mdl-color-text--accent-contrast">
-        <img alt="avatar" class="avatar" style="display:none; height: 100%; width: 100%">
-      </button>
-      <ul class="mdl-menu mdl-js-menu mdl-menu--bottom-right" for="profile-button">
-        <li id="username" class="mdl-menu__item"></li>
-        <li id="btn-logout" class="mdl-menu__item">Log Out</li>
-      </ul>
+    <button id="profile-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-color--accent mdl-color-text--accent-contrast">
+      <img alt="avatar" class="avatar" style="display:none; height: 100%; width: 100%">
+    </button>
+    <ul class="mdl-menu mdl-js-menu mdl-menu--bottom-right" for="profile-button">
+      <li id="username" class="mdl-menu__item"></li>
+      <li id="btn-logout" class="mdl-menu__item">Log Out</li>
+    </ul>
 
     <script src="https://code.getmdl.io/1.2.1/material.min.js"></script>
     <script src="//cdn.auth0.com/js/lock/10.3.0/lock.min.js"></script>
+
+    <script src="https://kjur.github.io/jsrsasign/jsrsasign-latest-all-min.js"></script>
 
     <!--import requirejs-->
     <script data-main="config" src="scripts/lib/r.js"></script>

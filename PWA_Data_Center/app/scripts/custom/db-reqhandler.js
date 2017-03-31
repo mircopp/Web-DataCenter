@@ -15,6 +15,18 @@ define(function (require) {
 
   DatabaseRequestHandler.prototype = {
 
+
+    getUserProfile : function (userID) {
+      return this.userDB.get(userID)
+        .catch(function (err) {
+          return null;
+        })
+    },
+
+    setUserProfile : function (userID, profile) {
+      profile._id = userID;
+      return this.userDB.put(profile);
+    },
     getKnownHosts : function () {
       return this.settingsDB.allDocs();
     },
@@ -57,15 +69,17 @@ define(function (require) {
       });
     },
 
-    readData: function (dataType, userId='test@test.com') {
-      // TODO refinement and user identification
-      return this.personalData.get(dataType);
+    readData: function (dataType, userId) {
+      return this.personalData.get(dataType + '|' + userId);
     },
 
     insertData :  function (dataObjects) {
       var that = this;
       if (dataObjects.length > 0 ) {
-        return that.readData(dataObjects[0].type)
+        var id = dataObjects[0].type + '|' + dataObjects[0].userID;
+        var dataType = dataObjects[0].type;
+        var userID = dataObjects[0].userID;
+        return that.readData(dataType, userID)
           .catch(function (err) {
             return {data: []};
           })
@@ -73,10 +87,11 @@ define(function (require) {
             var response = {'status': 'success', 'message': null, 'error' : null, doc: doc, duplicates: [], insertedValues : [], type : null};
             if ( dataObjects.length > 0 ) {
               var type = dataObjects[0].type;
+              var userID = dataObjects[0].userID;
               for ( let i = 0; i < dataObjects.length; i++ ) {
-                if ( dataObjects[i].type !== type ) {
+                if ( dataObjects[i].type !== type || dataObjects[i].userID !== userID ) {
                   response.status = 'failure';
-                  response.error = response.message = 'Please only send data of same type';
+                  response.error = response.message = 'Please only send data of same user and type';
                   return Promise.resolve(response);
                 }
               }
@@ -85,7 +100,7 @@ define(function (require) {
               response.message = 'No update needed';
               return Promise.resolve(response);
             }
-            response.type = dataObjects[0].type;
+            response._id = id;
             for ( let i = 0; i < dataObjects.length; i++ ) {
               if (contains(doc.data, dataObjects[i])) {
                 response.duplicates.push(dataObjects.splice(i,1));
@@ -108,11 +123,11 @@ define(function (require) {
           .then(function (res) {
             if (res.status === 'success') {
               if (res.message === 'Ready to insert') {
-                var type = res.type;
+                var id = res._id;
                 for (let i = 0; i < dataObjects.length; i++) {
                   res.doc.data.push(dataObjects[i]);
                 }
-                res.doc._id = type;
+                res.doc._id = id;
                 that.personalData.put(res.doc);
                 res.message = 'Successfully inserted';
               }
