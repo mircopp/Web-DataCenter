@@ -25,6 +25,8 @@ define(function (require) {
     crossDomainDataManager.keys = keys;
     crossDomainDataManager.setCreateHandler();
     crossDomainDataManager.setReadHandler();
+    crossDomainDataManager.setUpdateHandler();
+    crossDomainDataManager.setDeleteHandler();
     // return crossDomainDataManager.getKnownHosts()
     //   .then(function (res) {
     //     for ( let i = 0; i < crossDomainDataManager.knownHosts.length; i++) {
@@ -102,6 +104,14 @@ define(function (require) {
     crossDomainDataManager.readHandler = method;
   };
 
+  crossDomainDataManager.setUpdateHandler = function (method = updateHandler) {
+    crossDomainDataManager.updateHandler = method;
+  };
+
+  crossDomainDataManager.setDeleteHandler = function (method = deleteHandler) {
+    crossDomainDataManager.deleteHandler = method;
+  };
+
   crossDomainDataManager.getProfile = function (userID, profile) {
     return crossDomainDataManager.dbApi.getUserProfile(userID)
       .then(function (res) {
@@ -163,8 +173,8 @@ define(function (require) {
 
   const createHandler = function (event, dataObject, userID) {
     let res = {status:'success'};
-    for ( let i = 0; i< dataObject.query.length; i ++ ) {
-      if( !verifyCreateObject(dataObject.query[i]) ) {
+    for ( let i = 0; i< dataObject.query.dataObjects.length; i ++ ) {
+      if( !verifyCreateObject(dataObject.query.dataObjects[i]) ) {
         res = {
           status : 'failure',
           message : 'Object is not in given scheme!'
@@ -172,9 +182,9 @@ define(function (require) {
         makeResponse(event, dataObject, res);
         return;
       }
-      dataObject.query[i].userID = userID;
+      dataObject.query.dataObjects[i].userID = userID;
     }
-    crossDomainDataManager.dbApi.insertData(dataObject.query)
+    crossDomainDataManager.dbApi.insertData(dataObject.query.dataObjects)
       .then(function (res) {
         res.data = [];
         makeResponse(event, dataObject, res);
@@ -184,10 +194,7 @@ define(function (require) {
   };
 
   const verifyReadObject = function (query) {
-    if ( query.length !== 1 ) {
-      return false;
-    }
-    var keys = Object.keys(query[0]);
+    var keys = Object.keys(query);
     if ( keys.length !== 1 ) {
       return false;
     }
@@ -207,7 +214,7 @@ define(function (require) {
       makeResponse(event, dataObject, response);
       return;
     }
-    var queryId = dataObject.query[0].type;
+    var queryId = dataObject.query.type;
     crossDomainDataManager.dbApi.readData(queryId, userID)
       .catch(function (err) {
         return {data:[]};
@@ -227,6 +234,47 @@ define(function (require) {
       });
   };
 
+  const updateHandler = function (event, dataObject, userID) {
+    let response = {status:'success'};
+    var oldData = dataObject.query.oldObject;
+    var newData = dataObject.query.newObject;
+    var type = oldData.type;
+    crossDomainDataManager.dbApi.updateDataObject(type, userID, oldData, newData)
+      .then(function (res) {
+        if ( res.status === 'success' ) {
+          res.message = 'Successfully updated data object';
+        }
+        makeResponse(event, dataObject, res);
+      })
+  };
+
+  const deleteHandler = function (event, dataObject, userID) {
+    let response = {status:'success'};
+    if( !verifyReadObject(dataObject.query) ) {
+      response = {
+        status : 'failure',
+        message : 'Object is not in given scheme!'
+      };
+      makeResponse(event, dataObject, response);
+      return;
+    }
+    var queryId = dataObject.query.type;
+    crossDomainDataManager.dbApi.deleteObjectByDataType(queryId, userID)
+      .catch(function (err) {
+        return {data : []};
+      })
+      .then(function (res) {
+        if ( res.data.length === 0 ) {
+          response.message = 'No Data to delete';
+        } else {
+          response.message = 'Successfully deleted data';
+        }
+        response.data = res.data;
+        makeResponse(event, dataObject, response);
+        return;
+      })
+  };
+
   const makeResponse = function (event, request, response) {
     var res = {
       request : request,
@@ -241,7 +289,7 @@ define(function (require) {
         //TODO send id_token in data field described in bachelor thesis
         var user_token = dataObject.id_token;
 
-        var userID = verifyUserToken({id_token: user_token, success : function (userID, profile) {
+        verifyUserToken({id_token: user_token, success : function (userID, profile) {
           crossDomainDataManager.getProfile(userID, profile)
             .then(function (profile) {
               crossDomainDataManager.setKnownHosts(userID)
@@ -259,11 +307,11 @@ define(function (require) {
                                 break;
                           case 'update':
                             console.log('Updated value: ', dataObject.query);
+                            crossDomainDataManager.updateHandler(event, dataObject, userID);
                             //TODO update value in database
                                 break;
                           case 'delete':
-                            console.log('Deleted value: ', dataObject.query);
-                            // TODO delete value in database
+                            crossDomainDataManager.deleteHandler(event, dataObject, userID);
                                 break;
                           default:
                             break;

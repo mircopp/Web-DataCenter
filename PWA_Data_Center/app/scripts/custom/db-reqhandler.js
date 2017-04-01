@@ -73,6 +73,23 @@ define(function (require) {
       return this.personalData.get(dataType + '|' + userId);
     },
 
+    deleteObjectByDataType : function (dataType, userID) {
+      var response;
+      var that = this;
+      return this.readData(dataType, userID)
+        .catch(function (err) {
+          return {data : []};
+        })
+        .then(function (doc) {
+          response = doc;
+          var id = dataType + '|' + userID;
+          if ( doc.data.length > 0 ) {
+            that.personalData.remove(doc);
+          }
+          return response;
+        });
+    },
+
     insertData :  function (dataObjects) {
       var that = this;
       if (dataObjects.length > 0 ) {
@@ -135,6 +152,29 @@ define(function (require) {
             return Promise.resolve(res);
           });
       }
+    },
+    updateDataObject : function (dataType, userID, oldData, newData) {
+      var id = dataType + '|' + userID;
+      var response = {};
+      var that = this;
+      return this.personalData.get(id)
+        .catch(function (err) {
+          return {data : []};
+        })
+        .then(function (doc) {
+          var dataObjects = doc.data;
+          for ( var i = 0; i < dataObjects.length; i++ ) {
+            if (compare(dataObjects[i], oldData)) {
+              doc.data[i] = newData;
+              that.personalData.put(doc);
+              response.status = 'success';
+              return Promise.resolve(response)
+            }
+          }
+          response.status = 'failure';
+          response.message = 'Object not existing';
+          return Promise.resolve(response);
+        })
     }
   };
 

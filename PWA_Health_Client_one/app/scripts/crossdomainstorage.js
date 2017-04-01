@@ -49,17 +49,56 @@ CrossDomainStorage.prototype = {
   },
 
   reConnect : function () {
-    // this._iframeReady = false;
     this._iframe.src = this.origin + '/' + this.appendix;
   },
 
-  sendCreateRequest: function (userToken, dataObjects, callbackMethods) {
+  sendCreateRequest: function (userToken, dataObjects, callbackMethod) {
+    var queryObject = {
+      dataObjects : dataObjects
+    };
     var requestJSON = {
       method : 'create',
       id_token: userToken,
-      query: dataObjects
+      query: queryObject
     };
-    this._request(requestJSON, callbackMethods);
+    this._request(requestJSON, callbackMethod);
+  },
+
+  sendReadRequest : function (userToken, requestedDataType, callbackMethod) {
+    var queryObject = {
+      type: requestedDataType
+    };
+    var requestJSON = {
+      method : 'read',
+      id_token : userToken,
+      query : queryObject
+    };
+    this._request(requestJSON, callbackMethod);
+  },
+
+  sendDeleteRequest : function (userToken, dataTypeToDelete, callbackMethod) {
+    var queryObject = {
+      type: dataTypeToDelete
+    };
+    var requestJSON = {
+      method : 'delete',
+      id_token : userToken,
+      query : queryObject
+    };
+    this._request(requestJSON, callbackMethod);
+  },
+
+  sendUpdateRequest : function (userToken, oldDataObject, newDataObject, callbackMethod) {
+    var queryObject = {
+      oldObject : oldDataObject,
+      newObject : newDataObject
+    };
+    var requestJSON = {
+      method : 'update',
+      id_token : userToken,
+      query : queryObject
+    };
+    this._request(requestJSON, callbackMethod);
   },
 
   _request: function(json, callback){
