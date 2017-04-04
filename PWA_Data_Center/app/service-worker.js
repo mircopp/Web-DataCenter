@@ -7,46 +7,86 @@
 
 var cacheName = 'PWA_Data_center_cache';
 var systemDependantFiles = [
+  // routes
   '/',
-  '/config.js',
-  '/manifest.json',
-  '/index.html',
   '/api',
-  '/api.html',
+
+  // html
+  //'/index.html',
+  //'/api.html',
+
+  // manifest
+  '/manifest.json',
+
+  // RequireJS config files
+  '/config.js',
   '/config_api.js',
-  '/icon.png',
+
+  // JavaScript Files
   '/scripts/main.js',
+  '/scripts/sw/runtime-caching.js',
   '/scripts/lib/jquery-3.1.1.js',
   '/scripts/lib/r.js',
   '/scripts/lib/pouchdb-6.1.2.js',
   '/scripts/custom/util.js',
   '/scripts/custom/db-reqhandler.js',
   '/scripts/custom/crossdom-manager.js',
-  '/styles/main.css',
+  '/scripts/custom/auth0connection.js',
+
+  // images
+  '/icon.png',
   '/images/hamburger.svg',
   '/images/touch/apple-touch-icon.png',
   '/images/touch/chrome-touch-icon-192x192.png',
   '/images/touch/icon-128x128.png',
   '/images/touch/ms-touch-icon-144x144-precomposed.png',
-  '/scripts/sw/runtime-caching.js',
-  '/images/Data-center-1000x400.jpg',
   '/images/icons/06_menu_grid-512.png',
   '/images/icons/settings-5-xxl.png',
   '/images/icons/About-icon.png',
+
+  // Stylesheets
+  '/styles/main.css',
+];
+
+var externalFiles = [
+  // css
+  'https://fonts.googleapis.com/icon?family=Material+Icons',
+  'https://code.getmdl.io/1.2.1/material.indigo-pink.min.css',
+
+  // js
+  'https://code.getmdl.io/1.2.1/material.min.js',
+  '//cdn.auth0.com/js/lock/10.3.0/lock.min.js',
+  'https://kjur.github.io/jsrsasign/jsrsasign-latest-all-min.js',
+
+  // icons
+  'https://localhost:5000/icon.png'
 ];
 
 var testFiles = [
-  '/scripts/test/crossdomainstorage.js'
+  '/scripts/test/crossdomainstorage.js',
+  'https://localhost:5000/icon.png'
 ];
 
-var filesToCache = systemDependantFiles.concat(testFiles);
+var filesToCache = systemDependantFiles.concat(externalFiles);
 
 self.addEventListener('install', function(e) {
   console.log('[ServiceWorker] Install');
   e.waitUntil(
     caches.open(cacheName).then(function(cache) {
       console.log('[ServiceWorker] Caching app shell');
-      return cache.addAll(filesToCache);
+      var promises = [];
+      for ( let i = 0; i < filesToCache.length; i++ ) {
+        let request = new Request(filesToCache[i], {mode : 'cors', header : new Headers({'Access-Control-Allow-Origin' : '*'})});
+        promises.push(fetch(request)
+          .catch(function (err) {
+            console.log(err);
+            return fetch(new Request(filesToCache[i], { mode : 'no-cors' }))
+          })
+          .then(function (response) {
+            cache.put(request, response);
+          }));
+      }
+      return Promise.all(promises);
     })
   );
 });
