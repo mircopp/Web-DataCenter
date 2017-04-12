@@ -1,4 +1,4 @@
-# Web-DataCenter
+# WebDataCenter
 
 ## Setup
 
