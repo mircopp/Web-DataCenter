@@ -1,6 +1,6 @@
-#Web-DataCenter
+# Web-DataCenter
 
-##Setup
+## Setup
 
 ### Requirements
 
@@ -20,7 +20,7 @@ Please make sure that you have the following software up and running:
 Todo write getting started 
 
 
-##Background
+## Background
 
 ### Web Starter Kit
 
