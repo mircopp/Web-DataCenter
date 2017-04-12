@@ -29,8 +29,8 @@ var systemDependantFiles = [
   '/scripts/lib/r.js',
   '/scripts/lib/pouchdb-6.1.2.js',
   '/scripts/custom/util.js',
-  '/scripts/custom/db-reqhandler.js',
-  '/scripts/custom/crossdom-manager.js',
+  '/scripts/custom/datastorage.js',
+  '/scripts/custom/crossdatastoragehub.js',
   '/scripts/custom/auth0connection.js',
 
   // images

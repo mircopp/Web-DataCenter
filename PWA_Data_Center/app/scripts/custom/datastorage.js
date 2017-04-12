@@ -15,7 +15,6 @@ define(function (require) {
 
   DatabaseRequestHandler.prototype = {
 
-
     getUserProfile : function (userID) {
       return this.userDB.get(userID)
         .catch(function (err) {
@@ -27,9 +26,11 @@ define(function (require) {
       profile._id = userID;
       return this.userDB.put(profile);
     },
+
     getKnownHosts : function () {
       return this.settingsDB.allDocs();
     },
+
     extractKnownHosts : function (documents, userID) {
       const res = [];
       for ( let i = 0; i < documents.rows.length; i++ ) {
@@ -44,9 +45,11 @@ define(function (require) {
       }
       return res;
     },
+
     getSettingsOfHost : function (hostName, userID) {
       return this.settingsDB.get(hostName + '|' + userID);
     },
+
     insertNewHost : function (hostName, userID) {
       return this.settingsDB.put({
         _id : hostName + '|' + userID,
@@ -60,6 +63,7 @@ define(function (require) {
         }
       });
     },
+
     setMethodOfHost: function (host, userID, method, setting) {
       var db = this.settingsDB;
       return db.get(host + '|' + userID)
@@ -153,6 +157,7 @@ define(function (require) {
           });
       }
     },
+
     updateDataObject : function (dataType, userID, oldData, newData) {
       var id = dataType + '|' + userID;
       var response = {};
@@ -206,6 +211,7 @@ define(function (require) {
     }
     return true;
   };
+
   const compareSchemes = function (scheme1, scheme2) {
     if ( scheme1.length !== scheme2.length ) {
       return false;

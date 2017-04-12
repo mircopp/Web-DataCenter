@@ -39,22 +39,23 @@ callbackhandler.updateCallback = function (request, response) {
 };
 
 callbackhandler.readHeartrateCallback = function (request, response) {
-  callbackhandler.dataObjects.heartrate = response.data;
-  if ( response.data.length > 0 ) {
-    utils.insertDataObjectTable('heartrateObjectContainer', Object.keys(response.data[0].values));
-    for ( var i = 0; i < response.data.length; i++ ) {
-      utils.insertObjectTableCell('heartrateObjectContainer', 'heartrate', response.data[i].timestamp, response.data[i].values, response.data[i], i);
+  if ( response.status === 'success' ) {
+    callbackhandler.dataObjects.heartrate = response.data;
+    if ( response.data.length > 0 ) {
+      utils.insertDataObjectTable('heartrateObjectContainer', Object.keys(response.data[0].values));
+      for ( var i = 0; i < response.data.length; i++ ) {
+        utils.insertObjectTableCell('heartrateObjectContainer', 'heartrate', response.data[i].timestamp, response.data[i].values, response.data[i], i);
+      }
+      utils.setClickHandler(response, 'heartrate');
+    } else {
+      document.querySelector('#heartrateObjectContainer').innerHTML = '<h5>No Data available!</h5>';
     }
-    utils.setClickHandler(response, 'heartrate');
-  } else {
-    document.querySelector('#heartrateObjectContainer').innerHTML = '<h5>No Data available!</h5>';
+
+      var data = response.data;
+      highchartsFunctions.createHeartratechart('heartrateContainer', data);
   }
   var message = {message: response.message, timeout: 5000};
   callbackhandler.snackbarContainer.MaterialSnackbar.showSnackbar(message);
-  if ( response.status === 'success' ) {
-    var data = response.data;
-    highchartsFunctions.createHeartratechart('heartrateContainer', data);
-  }
 };
 
 callbackhandler.readStepsCallback = function (request, response) {

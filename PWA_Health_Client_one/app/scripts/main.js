@@ -83,7 +83,7 @@
 
   document.querySelector('#uploadHeartrate').onclick = function (e) {
     e.preventDefault();
-    domainManager.reConnect();
+    // domainManager.reConnect();
     var input = parseFloat(document.querySelector('#heartrateInput').value);
     if (input==null || isNaN(input)) {
       alert('Not a valid heartrate!');
@@ -103,7 +103,7 @@
   };
   document.querySelector('#uploadSteps').onclick = function (e) {
     e.preventDefault();
-    domainManager.reConnect();
+    // domainManager.reConnect();
     var input = parseFloat(document.querySelector('#stepsInput').value);
     if (input==null || isNaN(input)) {
       alert('Not a valid step number!');
@@ -124,28 +124,24 @@
 
   document.querySelector('#readHeartrate').onclick = function (e) {
     e.preventDefault();
-    domainManager.reConnect();
     var id_token = localStorage.getItem('id_token');
     domainManager.sendReadRequest(id_token, 'Heartrate', callbackhandler.readHeartrateCallback);
   };
 
   document.querySelector('#readSteps').onclick = function (e) {
     e.preventDefault();
-    domainManager.reConnect();
     var id_token = localStorage.getItem('id_token');
     domainManager.sendReadRequest(id_token, 'Steps', callbackhandler.readStepsCallback);
   };
 
   document.querySelector('#deleteHeartrate').onclick = function (e) {
     e.preventDefault();
-    domainManager.reConnect();
     var id_token = localStorage.getItem('id_token');
     domainManager.sendDeleteRequest(id_token, 'Heartrate', callbackhandler.deleteCallback);
   };
 
   document.querySelector('#deleteSteps').onclick = function (e) {
     e.preventDefault();
-    domainManager.reConnect();
     var id_token = localStorage.getItem('id_token');
     domainManager.sendDeleteRequest(id_token, 'Steps', callbackhandler.deleteCallback);
   };

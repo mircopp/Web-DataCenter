@@ -9,27 +9,30 @@ define(function (require) {
   var $ = require('jquery');
 
   var auth0Connector = {
-    lock : new Auth0Lock('BjG2eeVb5DiafM9I8Jf5GPpBTKxE4MXY', 'mircopp.eu.auth0.com', {auth: {params: {scope: 'openid email'}}, closable: false})
+    lock: new Auth0Lock('BjG2eeVb5DiafM9I8Jf5GPpBTKxE4MXY', 'mircopp.eu.auth0.com', {
+      auth: {params: {scope: 'openid email'}},
+      closable: false
+    })
   };
 
-  auth0Connector.lock.on('authenticated', function(authResult) {
+  auth0Connector.lock.on('authenticated', function (authResult) {
     localStorage.setItem('id_token', authResult.idToken);
     // redirect
     window.location.href = '/';
   });
 
   auth0Connector.setInitialState = function (callback) {
-    if(!localStorage.getItem('id_token')&&!localStorage.getItem('profile')){
+    if (!localStorage.getItem('id_token') && !localStorage.getItem('profile')) {
       $('main').hide();
       $('#profile-button').hide();
       auth0Connector.lock.show();
     }
-    else{
+    else {
       on_logged_in(callback);
     }
   };
 
-  $('#btn-logout').click(function(e) {
+  $('#btn-logout').click(function (e) {
     e.preventDefault();
     logout();
   });
@@ -41,7 +44,7 @@ define(function (require) {
   };
 
   //retrieve the profile:
-  var retrieve_profile = function(callback) {
+  var retrieve_profile = function (callback) {
     var id_token = localStorage.getItem('id_token');
     if (id_token) {
       auth0Connector.lock.getProfile(id_token, function (err, profile) {
@@ -60,7 +63,7 @@ define(function (require) {
     }
   };
 
-  var logout = function() {
+  var logout = function () {
     if (!localStorage.getItem('id_token')) {
       window.location.href = '/';
     } else {
@@ -70,10 +73,11 @@ define(function (require) {
     }
   };
 
-    var show_profile_info = function(profile){
+  var show_profile_info = function (profile) {
     document.getElementById('username').innerHTML = profile.email;
     $('.avatar').attr('src', profile.picture).show();
   };
+
   return auth0Connector;
 
 });

@@ -11,13 +11,13 @@ requirejs.config({
       'jquery':                   'lib/jquery-3.1.1',
       'pouchdb':                  'lib/pouchdb-6.1.2',
       'Util' :                    'custom/util',
-      'DatabaseRequestHandler':   'custom/db-reqhandler',
-      'crossDomainManager' :      'custom/crossdom-manager',
-      'auth0Connector' :          'custom/auth0connection',
+      'datastorage':              'custom/datastorage',
+      'crossdatastoragehub' :     'custom/crossdatastoragehub',
+      'auth0configurator' :       'custom/auth0connection',
     }
 });
 
-requirejs(['crossDomainManager'],function(crossDomainManager){
-  crossDomainManager.init();
-  crossDomainManager.connect();
+requirejs(['crossdatastoragehub'],function(CrossDataStorageHub){
+  const crossDataStorageHub = new CrossDataStorageHub();
+  crossDataStorageHub.connect();
 });
