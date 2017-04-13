@@ -86,12 +86,10 @@ define (function(require){
   const crossDataStorageHub = new CrossDataStorageHub();
   const Util = require('Util');
   const util = new Util(crossDataStorageHub);
+  const Auth0Configurator = require('auth0configurator');
+  const auth0Configurator = new Auth0Configurator('BjG2eeVb5DiafM9I8Jf5GPpBTKxE4MXY', 'mircopp.eu.auth0.com');
 
-  const auth0Lock = require('auth0configurator');
-
-  const app = {
-
-  };
+  const app = {};
 
   var callbackFunction = function () {
     var userID = JSON.parse(localStorage.getItem('profile')).email;
@@ -110,10 +108,6 @@ define (function(require){
       }
     });
   };
-
-  auth0Lock.setInitialState(callbackFunction);
-
-
-
+  auth0Configurator.connect('profile-button', 'btn-logout', 'username', callbackFunction)
 });
 

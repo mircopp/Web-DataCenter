@@ -40,41 +40,40 @@ callbackhandler.updateCallback = function (request, response) {
 
 callbackhandler.readHeartrateCallback = function (request, response) {
   if ( response.status === 'success' ) {
-    callbackhandler.dataObjects.heartrate = response.data;
-    if ( response.data.length > 0 ) {
-      utils.insertDataObjectTable('heartrateObjectContainer', Object.keys(response.data[0].values));
-      for ( var i = 0; i < response.data.length; i++ ) {
-        utils.insertObjectTableCell('heartrateObjectContainer', 'heartrate', response.data[i].timestamp, response.data[i].values, response.data[i], i);
+    callbackhandler.dataObjects.heartrate = response.dataObjects;
+    if ( response.dataObjects.length > 0 ) {
+      utils.insertDataObjectTable('heartrateObjectContainer', Object.keys(response.dataObjects[0].values));
+      for ( var i = 0; i < response.dataObjects.length; i++ ) {
+        utils.insertObjectTableCell('heartrateObjectContainer', 'heartrate', response.dataObjects[i].timestamp, response.dataObjects[i].values, response.dataObjects[i], i);
       }
       utils.setClickHandler(response, 'heartrate');
-    } else {
-      document.querySelector('#heartrateObjectContainer').innerHTML = '<h5>No Data available!</h5>';
     }
-
-      var data = response.data;
-      highchartsFunctions.createHeartratechart('heartrateContainer', data);
+    var data = response.dataObjects;
+    highchartsFunctions.createHeartratechart('heartrateContainer', data);
+  } else {
+    document.querySelector('#heartrateObjectContainer').innerHTML = '<h5>No Data available!</h5>';
   }
   var message = {message: response.message, timeout: 5000};
   callbackhandler.snackbarContainer.MaterialSnackbar.showSnackbar(message);
 };
 
 callbackhandler.readStepsCallback = function (request, response) {
-  callbackhandler.dataObjects.heartrate = response.data;
-  if ( response.data.length > 0 ) {
-    utils.insertDataObjectTable('stepsObjectContainer', Object.keys(response.data[0].values));
-    for ( var i = 0; i < response.data.length; i++ ) {
-      utils.insertObjectTableCell('stepsObjectContainer', 'steps', response.data[i].timestamp, response.data[i].values, response.data[i], i);
+  if ( response.status === 'success' ) {
+    callbackhandler.dataObjects.heartrate = response.dataObjects;
+    if ( response.dataObjects.length > 0 ) {
+      utils.insertDataObjectTable('stepsObjectContainer', Object.keys(response.dataObjects[0].values));
+      for ( var i = 0; i < response.dataObjects.length; i++ ) {
+        utils.insertObjectTableCell('stepsObjectContainer', 'steps', response.dataObjects[i].timestamp, response.dataObjects[i].values, response.dataObjects[i], i);
+      }
+      utils.setClickHandler(response, 'steps');
     }
-    utils.setClickHandler(response, 'steps');
+    var data = response.dataObjects;
+    highchartsFunctions.createStepchart('stepsContainer', data);
   } else {
     document.querySelector('#stepsObjectContainer').innerHTML = '<h5>No Data available!</h5>';
   }
   var data = {message: response.message, timeout: 5000};
   callbackhandler.snackbarContainer.MaterialSnackbar.showSnackbar(data);
-  if ( response.status === 'success' ) {
-    var data = response.data;
-    highchartsFunctions.createStepchart('stepsContainer', data);
-  }
 };
 
 
@@ -98,10 +97,11 @@ highchartsFunctions.createLineSeries = function (data) {
     var keys = Object.keys(clusters);
     var currentDataPoint = data[i];
     var currentDay = currentDataPoint.timestamp.split('T')[0];
+    let key = Object.keys(data[i].values)[0];
     if (contains(keys, currentDay)) {
-      clusters[currentDay].push([Date.parse(currentDataPoint.timestamp)-Date.parse(currentDay), currentDataPoint.values.val]);
+      clusters[currentDay].push([Date.parse(new Date((new Date(currentDataPoint.timestamp).getTime()) - (new Date().getTimezoneOffset())*60000).toISOString())-Date.parse(currentDay), currentDataPoint.values[key]]);
     } else {
-      clusters[currentDay] = [[Date.parse(currentDataPoint.timestamp)-Date.parse(currentDay), currentDataPoint.values.val]]
+      clusters[currentDay] = [[Date.parse(new Date((new Date(currentDataPoint.timestamp).getTime()) - (new Date().getTimezoneOffset())*60000).toISOString())-Date.parse(currentDay), currentDataPoint.values[key]]];
     }
   }
   var res = [];
@@ -210,7 +210,7 @@ utils.insertObjectTableCell = function (containerID, type, timestamp, values, da
     '</button>' +
     '</td>';
   var htmlCode = ' <tr id="' + type + 'Cell|' + id + '"> ' +
-    '<td class="mdl-data-table__cell--non-numeric">' + timestamp + '</td> ' +
+    '<td class="mdl-data-table__cell--non-numeric">' + new Date((new Date(timestamp).getTime()) - (new Date().getTimezoneOffset())*60000).toISOString() + '</td> ' +
     valueString +
     buttonString +
     '</tr>';
@@ -218,7 +218,7 @@ utils.insertObjectTableCell = function (containerID, type, timestamp, values, da
 };
 
 utils.setClickHandler = function (response, type) {
-  for ( var z = 0; z < response.data.length; z++ ) {
+  for ( var z = 0; z < response.dataObjects.length; z++ ) {
       document.getElementById(type + 'UpdateButton|' + z).onclick = function (e) {
         var id_token = localStorage.getItem('id_token');
         var id = this.id.split('|')[1];

@@ -7,13 +7,17 @@ define(function (require) {
 
   const PouchDB = require('pouchdb');
 
-  function DatabaseRequestHandler() {
-    this.userDB = new PouchDB('known_users');
-    this.settingsDB = new PouchDB('settings');
-    this.personalData = new PouchDB('data');
+  const privateMethods = {};
+
+  function DataStorage() {
+    this.userDB = new PouchDB('UserDB');
+    this.settingsDB = new PouchDB('SettingsDB');
+    this.personalData = new PouchDB('DataDB');
   }
 
-  DatabaseRequestHandler.prototype = {
+  DataStorage.prototype = {
+
+    // Public Methods
 
     getUserProfile : function (userID) {
       return this.userDB.get(userID)
@@ -67,6 +71,19 @@ define(function (require) {
     setMethodOfHost: function (host, userID, method, setting) {
       var db = this.settingsDB;
       return db.get(host + '|' + userID)
+        .catch(function (err) {
+          return {
+            _id : hostName + '|' + userID,
+            host: hostName,
+            userID : userID,
+            methods : {
+              create : false,
+              read : false,
+              update: false,
+              delete: false
+            }
+          }
+        })
         .then(function (doc) {
           doc.methods[method] = setting;
           return db.put(doc);
@@ -74,20 +91,23 @@ define(function (require) {
     },
 
     readData: function (dataType, userId) {
-      return this.personalData.get(dataType + '|' + userId);
+      return this.personalData.get(dataType + '|' + userId)
+        .catch(function (err) {
+          return {
+            _id : dataType + '|' + userId,
+            dataObjects : []
+          }
+        });
     },
 
     deleteObjectByDataType : function (dataType, userID) {
       var response;
       var that = this;
       return this.readData(dataType, userID)
-        .catch(function (err) {
-          return {data : []};
-        })
         .then(function (doc) {
           response = doc;
           var id = dataType + '|' + userID;
-          if ( doc.data.length > 0 ) {
+          if ( doc.dataObjects.length > 0 ) {
             that.personalData.remove(doc);
           }
           return response;
@@ -101,9 +121,6 @@ define(function (require) {
         var dataType = dataObjects[0].type;
         var userID = dataObjects[0].userID;
         return that.readData(dataType, userID)
-          .catch(function (err) {
-            return {data: []};
-          })
           .then(function (doc) {
             var response = {'status': 'success', 'message': null, 'error' : null, doc: doc, duplicates: [], insertedValues : [], type : null};
             if ( dataObjects.length > 0 ) {
@@ -123,7 +140,7 @@ define(function (require) {
             }
             response._id = id;
             for ( let i = 0; i < dataObjects.length; i++ ) {
-              if (contains(doc.data, dataObjects[i])) {
+              if (privateMethods.contains(doc.dataObjects, dataObjects[i])) {
                 response.duplicates.push(dataObjects.splice(i,1));
                 --i;
               } else {
@@ -146,7 +163,7 @@ define(function (require) {
               if (res.message === 'Ready to insert') {
                 var id = res._id;
                 for (let i = 0; i < dataObjects.length; i++) {
-                  res.doc.data.push(dataObjects[i]);
+                  res.doc.dataObjects.push(dataObjects[i]);
                 }
                 res.doc._id = id;
                 that.personalData.put(res.doc);
@@ -163,14 +180,11 @@ define(function (require) {
       var response = {};
       var that = this;
       return this.personalData.get(id)
-        .catch(function (err) {
-          return {data : []};
-        })
         .then(function (doc) {
-          var dataObjects = doc.data;
+          var dataObjects = doc.dataObjects;
           for ( var i = 0; i < dataObjects.length; i++ ) {
-            if (compare(dataObjects[i], oldData)) {
-              doc.data[i] = newData;
+            if (privateMethods.compare(dataObjects[i], oldData)) {
+              doc.dataObjects[i] = newData;
               that.personalData.put(doc);
               response.status = 'success';
               return Promise.resolve(response)
@@ -183,20 +197,22 @@ define(function (require) {
     }
   };
 
-  const contains = function (collection, object) {
+  // Private Methods
+
+  privateMethods.contains = function (collection, object) {
     for ( let i = 0; i < collection.length; i++ ) {
       var dataPoint = collection[i];
-      if ( compare(dataPoint, object) ) {
+      if ( privateMethods.compare(dataPoint, object) ) {
         return true;
       }
     }
     return false;
   };
 
-  const compare = function (data1, data2) {
+  privateMethods.compare = function (data1, data2) {
     var keys1 = Object.keys(data1);
     var keys2 = Object.keys(data2);
-    if ( !compareSchemes(keys1, keys2) ) {
+    if ( !privateMethods.compareSchemes(keys1, keys2) ) {
       return false;
     }
     for ( let i = 0; i < keys1.length; i++ ) {
@@ -212,7 +228,7 @@ define(function (require) {
     return true;
   };
 
-  const compareSchemes = function (scheme1, scheme2) {
+  privateMethods.compareSchemes = function (scheme1, scheme2) {
     if ( scheme1.length !== scheme2.length ) {
       return false;
     }
@@ -227,5 +243,5 @@ define(function (require) {
     return true;
   };
 
-  return DatabaseRequestHandler;
+  return DataStorage;
 });

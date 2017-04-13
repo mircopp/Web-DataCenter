@@ -93,9 +93,9 @@
         type: 'Heartrate',
         unit: 'bpm',
         timestamp: new Date().toISOString(),
-        deviceID: currentDevice,
+        applicationID: location.origin,
         values: {
-          val: input
+          pulse: input
         }
       }];
       domainManager.sendCreateRequest(id_token, dataObjects, callbackhandler.createCallback);
@@ -111,11 +111,11 @@
       var id_token = localStorage.getItem('id_token');
       var dataObjects = [{
         type: 'Steps',
-        unit: 'None',
+        unit: 'none',
         timestamp: new Date().toISOString(),
-        deviceID: currentDevice,
+        applicationID: location.origin,
         values: {
-          val: input
+          count: input
         }
       }];
       domainManager.sendCreateRequest(id_token, dataObjects, callbackhandler.createCallback);
