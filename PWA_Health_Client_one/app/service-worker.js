@@ -5,40 +5,72 @@
 
 'use strict';
 
-var cacheName = 'PWA_Data_center_cache';
+var cacheName = 'PWA_Data_client_cache';
+
 var systemDependantFiles = [
+  // routes
   '/',
+
+  // html
+  //'/index.html',
+  //'/api.html',
+
+  // manifest
   '/manifest.json',
-  '/index.html',
-  '/icon.png',
+
+  // JavaScript Files
   '/scripts/main.js',
-  '/scripts/jquery-3.1.1.js',
-  '/styles/main.css',
+  '/scripts/sw/runtime-caching.js',
+  '/scripts/lib/jquery-3.1.1.js',
+  '/scripts/custom/auth0connection.js',
+  '/scripts/custom/callbackmethods.js',
+  '/scripts/custom/crossdatastorageclient.js',
+
+  // images
+  '/icon.png',
   '/images/hamburger.svg',
   '/images/touch/apple-touch-icon.png',
   '/images/touch/chrome-touch-icon-192x192.png',
   '/images/touch/icon-128x128.png',
   '/images/touch/ms-touch-icon-144x144-precomposed.png',
-  '/scripts/sw/runtime-caching.js',
-  '/images/basic3-120_shoes_foot_step_footsteps-512.png',
-  '/images/pulse-512.png',
-  '/scripts/crossdomainstorage.js',
-  '/scripts/callbackmethods.js'
+  '/images/icons/basic3-120_shoes_foot_step_footsteps-512.png',
+  '/images/icons/pulse-512.png',
 
-
+  // Stylesheets
+  '/styles/main.css',
 ];
 
-var testFiles = [
-];
+var externalFiles = [
+  // css
+  'https://fonts.googleapis.com/icon?family=Material+Icons',
+  'https://code.getmdl.io/1.2.1/material.indigo-pink.min.css',
 
-var filesToCache = systemDependantFiles.concat(testFiles);
+  // js
+  'https://code.getmdl.io/1.2.1/material.min.js',
+  '//cdn.auth0.com/js/lock/10.3.0/lock.min.js',
+  'https://code.highcharts.com/highcharts.js',
+  'https://code.highcharts.com/modules/exporting.js',
+];
 
 self.addEventListener('install', function(e) {
   console.log('[ServiceWorker] Install');
   e.waitUntil(
     caches.open(cacheName).then(function(cache) {
       console.log('[ServiceWorker] Caching app shell');
-      return cache.addAll(filesToCache);
+      var promises = [];
+      promises.push(cache.addAll(systemDependantFiles));
+      for ( let i = 0; i < externalFiles.length; i++ ) {
+        let request = new Request(externalFiles[i], {mode : 'no-cors', header : new Headers({'Access-Control-Allow-Origin' : '*'})});
+        promises.push(fetch(request)
+          .catch(function (err) {
+            console.log(err, i);
+            return fetch(new Request(externalFiles[i], { mode : 'cors', header : new Headers({'Access-Control-Allow-Origin' : '*'})}))
+          })
+          .then(function (response) {
+            cache.put(request, response);
+          }));
+      }
+      return Promise.all(promises);
     })
   );
 });

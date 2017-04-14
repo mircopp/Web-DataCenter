@@ -28,7 +28,7 @@ var systemDependantFiles = [
   '/scripts/lib/jquery-3.1.1.js',
   '/scripts/lib/r.js',
   '/scripts/lib/pouchdb-6.1.2.js',
-  '/scripts/custom/util.js',
+  '/scripts/custom/contentutil.js',
   '/scripts/custom/datastorage.js',
   '/scripts/custom/crossdatastoragehub.js',
   '/scripts/custom/auth0connection.js',
@@ -46,6 +46,9 @@ var systemDependantFiles = [
 
   // Stylesheets
   '/styles/main.css',
+
+  // Humans
+  '/humans.txt'
 ];
 
 var externalFiles = [
@@ -62,11 +65,6 @@ var externalFiles = [
   'https://localhost:5000/icon.png'
 ];
 
-var testFiles = [
-  '/scripts/test/crossdomainstorage.js',
-  'https://localhost:5000/icon.png'
-];
-
 var filesToCache = systemDependantFiles.concat(externalFiles);
 
 self.addEventListener('install', function(e) {
@@ -75,17 +73,18 @@ self.addEventListener('install', function(e) {
     caches.open(cacheName).then(function(cache) {
       console.log('[ServiceWorker] Caching app shell');
       var promises = [];
-      for ( let i = 0; i < filesToCache.length; i++ ) {
-        let request = new Request(filesToCache[i], {mode : 'cors', header : new Headers({'Access-Control-Allow-Origin' : '*'})});
+      for ( let i = 0; i < externalFiles.length; i++ ) {
+        let request = new Request(externalFiles[i], {mode : 'no-cors', header : new Headers({'Access-Control-Allow-Origin' : '*'})});
         promises.push(fetch(request)
           .catch(function (err) {
-            console.log(err);
-            return fetch(new Request(filesToCache[i], { mode : 'no-cors' }))
+            console.log(err, i);
+            return fetch(new Request(externalFiles[i], { mode : 'cors', header : new Headers({'Access-Control-Allow-Origin' : '*'})}))
           })
           .then(function (response) {
             cache.put(request, response);
           }));
       }
+      promises.push(cache.addAll(systemDependantFiles));
       return Promise.all(promises);
     })
   );

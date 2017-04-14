@@ -1,14 +1,12 @@
 # humanstxt.org/
 # The humans responsible & technology colophon
 
-# TEAM
+/* TEAM */
+Your title: Mirco Pyrtek
+Location: Saarbruecken, Germany
 
-  <name> -- <role> -- <twitter>
-
-# THANKS
-
-  <name>
-
-# TECHNOLOGY COLOPHON
-
-  HTML5, CSS3
+/* SITE */
+Last update: 2017/04/25
+Standards: HTML5, CSS3
+Components: Modernizr, jQuery
+Software: RequireJS, PouchDB
