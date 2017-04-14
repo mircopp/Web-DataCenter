@@ -75,15 +75,13 @@
   // Your custom JavaScript goes here
 
   var centerOrigin = 'https://localhost:3000';
-  var domainManager = new CrossDomainStorage(centerOrigin, 'api');
-  var currentDevice = '123456789abc';
+  var domainManager = new CrossDataStorageClient(centerOrigin);
   callbackhandler.init(domainManager, 'snackbar');
 
   document.querySelector('#visit').setAttribute('href', centerOrigin);
 
   document.querySelector('#uploadHeartrate').onclick = function (e) {
     e.preventDefault();
-    // domainManager.reConnect();
     var input = parseFloat(document.querySelector('#heartrateInput').value);
     if (input==null || isNaN(input)) {
       alert('Not a valid heartrate!');
@@ -101,9 +99,9 @@
       domainManager.sendCreateRequest(id_token, dataObjects, callbackhandler.createCallback);
     }
   };
+
   document.querySelector('#uploadSteps').onclick = function (e) {
     e.preventDefault();
-    // domainManager.reConnect();
     var input = parseFloat(document.querySelector('#stepsInput').value);
     if (input==null || isNaN(input)) {
       alert('Not a valid step number!');
@@ -146,7 +144,8 @@
     domainManager.sendDeleteRequest(id_token, 'Steps', callbackhandler.deleteCallback);
   };
 
-  auth0Connector.setInitialState(function () {
-    return;
-  });
+  const auth0Configurator = new Auth0Configurator('BjG2eeVb5DiafM9I8Jf5GPpBTKxE4MXY', 'mircopp.eu.auth0.com');
+
+  auth0Configurator.connect('profile-button', 'btn-logout', 'username', function () {});
+
 })();

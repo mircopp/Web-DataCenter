@@ -278,10 +278,10 @@ define(function (require) {
         const response = {status: 'success'};
         response.dataObjects = res.dataObjects;
         if (res.dataObjects.length > 0) {
-          response.message = 'Successfully fetched data!';
+          response.message = 'Successfully fetched data';
         } else {
           response.status = 'failure';
-          response.message = 'No data found!';
+          response.message = 'No data found';
         }
         privateMethods.makeResponse(event, dataObject, response);
         return;

@@ -5,7 +5,7 @@
 function CrossDomainStorage(origin){
     this.origin = origin;
     this._iframe = null;
-    this._iframeReady = false;
+    this._iframeLoaded = false;
     this._queue = [];
     this._requests = {};
     this._id = 0;
@@ -59,7 +59,7 @@ CrossDomainStorage.prototype = {
         callback: callback
       };
 
-      if (this._iframeReady){
+      if (this._iframeLoaded){
           this._sendRequest(data);
       } else {
           this._queue.push(data);
@@ -77,7 +77,7 @@ CrossDomainStorage.prototype = {
     },
 
     _iframeLoaded: function(){
-        this._iframeReady = true;
+        this._iframeLoaded = true;
 
         if (this._queue.length){
             for (var i=0, len=this._queue.length; i < len; i++){

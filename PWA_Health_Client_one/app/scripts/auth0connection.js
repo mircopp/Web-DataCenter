@@ -4,69 +4,101 @@
 
 'use strict';
 
-var auth0Connector = {
-  lock : new Auth0Lock('BjG2eeVb5DiafM9I8Jf5GPpBTKxE4MXY', 'mircopp.eu.auth0.com', {auth: {params: {scope: 'openid email'}}, closable: false})
-};
+;(function (root) {
 
-auth0Connector.lock.on('authenticated', function(authResult) {
-  localStorage.setItem('id_token', authResult.idToken);
-  // redirect
-  window.location.href = '/';
-});
-
-auth0Connector.setInitialState = function (callback) {
-  if(!localStorage.getItem('id_token')&&!localStorage.getItem('profile')){
-    $('main').hide();
-    $('#profile-button').hide();
-    auth0Connector.lock.show();
+  function Auth0Configurator(clientID, domain, config = {auth: {params: {scope: 'openid email'}}, closable: false}) {
+    this.lock = new Auth0Lock(clientID, domain, config);
   }
-  else{
-    on_logged_in(callback);
-  }
-};
 
-$('#btn-logout').click(function(e) {
-  e.preventDefault();
-  logout();
-});
+  const privateFunctions = {};
 
-var on_logged_in = function (callback) {
-  document.getElementById('profile-button').setAttribute('style', 'display: block');
-  retrieve_profile(callback);
-  auth0Connector.lock.hide();
-};
+  // Public functions
+  Auth0Configurator.prototype.connect = function (profileButton, logoutButton, username, callbackFunction) {
+    this.profileButton = profileButton;
+    this.logoutButton = logoutButton;
+    this.username = username;
+    this.callback = callbackFunction;
 
-//retrieve the profile:
-var retrieve_profile = function(callback) {
-  var id_token = localStorage.getItem('id_token');
-  if (id_token) {
-    auth0Connector.lock.getProfile(id_token, function (err, profile) {
-      if (err) {
-        alert('Error while retrieving profile information');
-        logout();
-      } else {
-        localStorage.setItem('profile', JSON.stringify(profile));
-        // Display user information
-        show_profile_info(profile);
-        callback();
-      }
+    const _this = this;
+    this.lock.on('authenticated', function (authResult) {
+      localStorage.setItem('id_token', authResult.idToken);
+      // redirect
+      privateFunctions.on_logged_in(_this);
+    });
+
+    $('#' + this.logoutButton).click(function (e) {
+      e.preventDefault();
+      privateFunctions.logout();
+    });
+
+    if (!localStorage.getItem('id_token') && !localStorage.getItem('profile')) {
+      $('main').hide();
+      $('#' + this.profileButton).hide();
+      this.lock.show();
+    } else {
+      privateFunctions.on_logged_in(this);
+    }
+  };
+
+  Auth0Configurator.prototype.getLock = function () {
+    return this.lock;
+  };
+
+  // Private Functions
+  privateFunctions.on_logged_in = function (_this) {
+    document.getElementById(_this.profileButton).setAttribute('style', 'display: block');
+    privateFunctions.retrieve_profile(_this);
+    $('main').show();
+    _this.lock.hide();
+  };
+
+  privateFunctions.retrieve_profile = function (_this) {
+    const id_token = localStorage.getItem('id_token');
+    if (id_token) {
+      _this.lock.getProfile(id_token, function (err, profile) {
+        if (err) {
+          alert('Error while retrieving profile information');
+          privateFunctions.logout();
+        } else {
+          localStorage.setItem('profile', JSON.stringify(profile));
+          // Display user information
+          privateFunctions.show_profile_info(_this, profile);
+          _this.callback();
+        }
+      });
+    } else {
+      privateFunctions.logout();
+    }
+  };
+
+  privateFunctions.logout = function () {
+    if (!localStorage.getItem('id_token')) {
+      window.location.href = '/';
+    } else {
+      localStorage.removeItem('id_token');
+      localStorage.removeItem('profile');
+      window.location.href = '/';
+    }
+  };
+
+  privateFunctions.show_profile_info = function (_this, profile) {
+    document.getElementById(_this.username).innerHTML = profile.email;
+    $('.avatar').attr('src', profile.picture).show();
+  };
+
+  /**
+   * Export environments.
+   */
+
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = Auth0Configurator;
+  } else if (typeof exports !== 'undefined') {
+    exports.Auth0Configurator = Auth0Configurator;
+  } else if (typeof define === 'function' && define.amd) {
+    define([], function() {
+      return Auth0Configurator;
     });
   } else {
-    logout();
+    root.Auth0Configurator = Auth0Configurator;
   }
-};
-
-var logout = function() {
-  if (!localStorage.getItem('id_token')) {
-    window.location.href = '/';
-  } else {
-    localStorage.removeItem('id_token');
-    localStorage.removeItem('profile');
-    window.location.href = '/';
-  }
-};
-
-  var show_profile_info = function(profile){
-  document.getElementById('username').innerHTML = profile.email;
-  $('.avatar').attr('src', profile.picture).show();
-};
+}(this));
