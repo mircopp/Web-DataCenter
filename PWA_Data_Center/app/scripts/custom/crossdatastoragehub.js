@@ -75,7 +75,7 @@ define(function (require) {
     const _this = this;
     return this.getKnownHosts(userID)
       .then(function (res) {
-        var promises = [];
+        const promises = [];
         for (let i = 0; i < res.length; i++) {
           promises.push(_this.getSettingsOfHost(res[i], userID));
         }
@@ -84,7 +84,7 @@ define(function (require) {
   };
 
   CrossDataStorageHub.prototype.setSettingsOfHost = function (host, userID, method, checked) {
-    var _this = this;
+    const _this = this;
     return this.dataStorage.setMethodOfHost(host, userID, method, checked)
       .then(function () {
         _this.getSettingsOfHost(host, userID);
@@ -92,7 +92,7 @@ define(function (require) {
   };
 
   CrossDataStorageHub.prototype.setProfile = function (userID, profile) {
-    var _this = this;
+    const _this = this;
     return this.dataStorage.getUserProfile(userID)
       .then(function (res) {
         if (!res) {
@@ -163,7 +163,7 @@ define(function (require) {
                 })
             });
         }, error: function (err) {
-          var res = {
+          const res = {
             status: 'failure',
             message: 'User authentification failed: ' + err
           };
@@ -181,7 +181,7 @@ define(function (require) {
   };
 
   privateMethods.makeResponse = function (event, request, response) {
-    var res = {
+    const res = {
       request: request,
       response: response
     };
@@ -200,7 +200,7 @@ define(function (require) {
 
   // Verifying methods
   verifiers.verifyOrigin = function (_this, origin, method, userID) {
-    var id = origin + '|' + userID;
+    const id = origin + '|' + userID;
     const hosts = Object.keys(_this.hostSettings);
     if (hosts.indexOf(id) > -1) {
       if (_this.hostSettings[id]) {
@@ -221,7 +221,7 @@ define(function (require) {
   };
 
   verifiers.verifyCreateObject = function (_this, object) {
-    var keys = Object.keys(object);
+    const keys = Object.keys(object);
     for (let i = 0; i < _this.keys.length; i++) {
       if (keys.indexOf(_this.keys[i]) > -1) {
         continue;

@@ -38,7 +38,7 @@ define(function (require) {
     extractKnownHosts : function (documents, userID) {
       const res = [];
       for ( let i = 0; i < documents.rows.length; i++ ) {
-        var current = documents.rows[i].id.split('|');
+        let current = documents.rows[i].id.split('|');
         if (userID){
           if (current[1] && (current[1] === userID)) {
             res.push(current[0]);
@@ -69,7 +69,7 @@ define(function (require) {
     },
 
     setMethodOfHost: function (host, userID, method, setting) {
-      var db = this.settingsDB;
+      const db = this.settingsDB;
       return db.get(host + '|' + userID)
         .catch(function (err) {
           return {
@@ -101,12 +101,11 @@ define(function (require) {
     },
 
     deleteObjectByDataType : function (dataType, userID) {
-      var response;
-      var that = this;
+      const that = this;
       return this.readData(dataType, userID)
         .then(function (doc) {
-          response = doc;
-          var id = dataType + '|' + userID;
+          const response = doc;
+          const id = dataType + '|' + userID;
           if ( doc.dataObjects.length > 0 ) {
             that.personalData.remove(doc);
           }
@@ -115,17 +114,17 @@ define(function (require) {
     },
 
     insertData :  function (dataObjects) {
-      var that = this;
+      const that = this;
       if (dataObjects.length > 0 ) {
-        var id = dataObjects[0].type + '|' + dataObjects[0].userID;
-        var dataType = dataObjects[0].type;
-        var userID = dataObjects[0].userID;
+        const id = dataObjects[0].type + '|' + dataObjects[0].userID;
+        const dataType = dataObjects[0].type;
+        const userID = dataObjects[0].userID;
         return that.readData(dataType, userID)
           .then(function (doc) {
-            var response = {'status': 'success', 'message': null, 'error' : null, doc: doc, duplicates: [], insertedValues : [], type : null};
+            const response = {'status': 'success', 'message': null, 'error' : null, doc: doc, duplicates: [], insertedValues : [], type : null};
             if ( dataObjects.length > 0 ) {
-              var type = dataObjects[0].type;
-              var userID = dataObjects[0].userID;
+              const type = dataObjects[0].type;
+              const userID = dataObjects[0].userID;
               for ( let i = 0; i < dataObjects.length; i++ ) {
                 if ( dataObjects[i].type !== type || dataObjects[i].userID !== userID ) {
                   response.status = 'failure';
@@ -161,7 +160,7 @@ define(function (require) {
           .then(function (res) {
             if (res.status === 'success') {
               if (res.message === 'Ready to insert') {
-                var id = res._id;
+                const id = res._id;
                 for (let i = 0; i < dataObjects.length; i++) {
                   res.doc.dataObjects.push(dataObjects[i]);
                 }
@@ -176,13 +175,13 @@ define(function (require) {
     },
 
     updateDataObject : function (dataType, userID, oldData, newData) {
-      var id = dataType + '|' + userID;
-      var response = {};
-      var that = this;
+      const id = dataType + '|' + userID;
+      const response = {};
+      const that = this;
       return this.personalData.get(id)
         .then(function (doc) {
-          var dataObjects = doc.dataObjects;
-          for ( var i = 0; i < dataObjects.length; i++ ) {
+          const dataObjects = doc.dataObjects;
+          for ( let i = 0; i < dataObjects.length; i++ ) {
             if (privateMethods.compare(dataObjects[i], oldData)) {
               doc.dataObjects[i] = newData;
               that.personalData.put(doc);
@@ -201,7 +200,7 @@ define(function (require) {
 
   privateMethods.contains = function (collection, object) {
     for ( let i = 0; i < collection.length; i++ ) {
-      var dataPoint = collection[i];
+      let dataPoint = collection[i];
       if ( privateMethods.compare(dataPoint, object) ) {
         return true;
       }
@@ -210,8 +209,8 @@ define(function (require) {
   };
 
   privateMethods.compare = function (data1, data2) {
-    var keys1 = Object.keys(data1);
-    var keys2 = Object.keys(data2);
+    const keys1 = Object.keys(data1);
+    const keys2 = Object.keys(data2);
     if ( !privateMethods.compareSchemes(keys1, keys2) ) {
       return false;
     }

@@ -84,26 +84,25 @@ define (function(require){
   // import constructors
   const CrossDataStorageHub = require('crossdatastoragehub');
   const crossDataStorageHub = new CrossDataStorageHub();
-  const Util = require('Util');
-  const util = new Util(crossDataStorageHub);
+  const ContentUtil = require('ContentUtil');
+  const contentUtil = new ContentUtil(crossDataStorageHub);
   const Auth0Configurator = require('auth0configurator');
   const auth0Configurator = new Auth0Configurator('BjG2eeVb5DiafM9I8Jf5GPpBTKxE4MXY', 'mircopp.eu.auth0.com');
 
   const app = {};
 
-  var callbackFunction = function () {
-    var userID = JSON.parse(localStorage.getItem('profile')).email;
+  const callbackFunction = function () {
+    const userID = JSON.parse(localStorage.getItem('profile')).email;
     crossDataStorageHub.getKnownHosts(userID)
     .then(function (res) {
-      app.knownHosts = res;
-      for ( let i = 0; i < app.knownHosts.length; i++) {
-        var host = app.knownHosts[i];
-        util.createIcon(app.knownHosts[i]);
+      for ( let i = 0; i < res.length; i++) {
+        let host = res[i];
+        contentUtil.createIcon(host);
         crossDataStorageHub.getSettingsOfHost(host, userID)
           .then(function (doc) {
-            var name = util.insertSettingsContainer('settings', doc.host);
-            util.insertMdlList(name, doc.methods);
-            util.addEventHandlerForSettingBoxes(userID);
+            const name = contentUtil.insertSettingsContainer('settings', doc.host);
+            contentUtil.insertMdlList(name, doc.methods);
+            contentUtil.addEventHandlerForSettingBoxes(userID);
           });
       }
     });

@@ -6,13 +6,13 @@
 
 define(function (require) {
 
-  var $ = require('jquery');
+  const $ = require('jquery');
 
   function Auth0Config (clientID, domain, config = {auth : {params : {scope : 'openid email'}}, closable : false}) {
     this.lock = new Auth0Lock(clientID, domain, config);
   }
 
-  var privateFunctions = {};
+  const privateFunctions = {};
 
   // Public functions
   Auth0Config.prototype.connect = function (profileButton, logoutButton, username, callbackFunction) {
@@ -55,7 +55,7 @@ define(function (require) {
   };
 
   privateFunctions.retrieve_profile = function (_this) {
-    var id_token = localStorage.getItem('id_token');
+    const id_token = localStorage.getItem('id_token');
     if (id_token) {
       _this.lock.getProfile(id_token, function (err, profile) {
         if (err) {

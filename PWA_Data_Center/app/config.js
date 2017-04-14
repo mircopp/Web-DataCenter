@@ -10,7 +10,7 @@ requirejs.config({
     paths: {
       'jquery':                 'lib/jquery-3.1.1',
       'pouchdb':                'lib/pouchdb-6.1.2',
-      'Util' :                  'custom/util',
+      'ContentUtil' :           'custom/contentutil',
       'datastorage':            'custom/datastorage',
       'crossdatastoragehub' :   'custom/crossdatastoragehub',
       'auth0configurator' :     'custom/auth0connection'
