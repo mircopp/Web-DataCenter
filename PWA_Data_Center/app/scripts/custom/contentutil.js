@@ -6,10 +6,10 @@
 
 define(function (require) {
 
-  function ContentUtil(storageHub) {
+  function ContentUtil(crossDataStorageHub) {
     this.boxes = [];
     this.$ = require('jquery');
-    this.dataStorageHub = storageHub;
+    this.crossDataStorageHub = crossDataStorageHub;
   }
 
   ContentUtil.prototype = {
@@ -48,7 +48,7 @@ define(function (require) {
           const host = temp[1];
           const method = temp[0];
           const checked = event.target.checked;
-          that.dataStorageHub.setSettingsOfHost(host, userID, method, checked);
+          that.crossDataStorageHub.setSettingsOfHost(host, userID, method, checked);
         };
         input.addEventListener('change', handlerMethod);
       }

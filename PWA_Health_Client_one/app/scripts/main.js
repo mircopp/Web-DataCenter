@@ -25,7 +25,7 @@
   // service worker from an insecure origin will trigger JS console errors. See
   // http://www.chromium.org/Home/chromium-security/prefer-secure-origins-for-powerful-new-features
 
-  var isLocalhost = Boolean(window.location.hostname === 'localhost' ||
+  const isLocalhost = Boolean(window.location.hostname === 'localhost' ||
       // [::1] is the IPv6 localhost address.
       window.location.hostname === '[::1]' ||
       // 127.0.0.1/8 is considered localhost for IPv4.
@@ -47,7 +47,7 @@
         if (navigator.serviceWorker.controller) {
           // The updatefound event implies that registration.installing is set:
           // https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-container-updatefound-event
-          var installingWorker = registration.installing;
+          const installingWorker = registration.installing;
 
           installingWorker.onstatechange = function() {
             switch (installingWorker.state) {
@@ -75,20 +75,20 @@
 
   // Your custom JavaScript goes here
 
-  var centerOrigin = 'https://localhost:3000';
-  var domainManager = new CrossDataStorageClient(centerOrigin);
-  callbackhandler.init(domainManager, 'snackbar');
+  const centerOrigin = 'https://localhost:3000';
+  const crossDataStorageClient = new CrossDataStorageClient(centerOrigin);
+  callbackhandler.init(crossDataStorageClient, 'snackbar');
 
   document.querySelector('#visit').setAttribute('href', centerOrigin);
 
   document.querySelector('#uploadHeartrate').onclick = function (e) {
     e.preventDefault();
-    var input = parseFloat(document.querySelector('#heartrateInput').value);
+    const input = parseFloat(document.querySelector('#heartrateInput').value);
     if (input==null || isNaN(input)) {
       alert('Not a valid heartrate!');
     } else {
-      var id_token = localStorage.getItem('id_token');
-      var dataObjects = [{
+      const id_token = localStorage.getItem('id_token');
+      const dataObjects = [{
         type: 'Heartrate',
         unit: 'bpm',
         timestamp: new Date().toISOString(),
@@ -97,18 +97,18 @@
           pulse: input
         }
       }];
-      domainManager.sendCreateRequest(id_token, dataObjects, callbackhandler.createCallback);
+      crossDataStorageClient.sendCreateRequest(id_token, dataObjects, callbackhandler.createCallback);
     }
   };
 
   document.querySelector('#uploadSteps').onclick = function (e) {
     e.preventDefault();
-    var input = parseFloat(document.querySelector('#stepsInput').value);
+    const input = parseFloat(document.querySelector('#stepsInput').value);
     if (input==null || isNaN(input)) {
       alert('Not a valid step number!');
     } else {
-      var id_token = localStorage.getItem('id_token');
-      var dataObjects = [{
+      const id_token = localStorage.getItem('id_token');
+      const dataObjects = [{
         type: 'Steps',
         unit: 'none',
         timestamp: new Date().toISOString(),
@@ -117,32 +117,32 @@
           count: input
         }
       }];
-      domainManager.sendCreateRequest(id_token, dataObjects, callbackhandler.createCallback);
+      crossDataStorageClient.sendCreateRequest(id_token, dataObjects, callbackhandler.createCallback);
     }
   };
 
   document.querySelector('#readHeartrate').onclick = function (e) {
     e.preventDefault();
-    var id_token = localStorage.getItem('id_token');
-    domainManager.sendReadRequest(id_token, 'Heartrate', callbackhandler.readHeartrateCallback);
+    const id_token = localStorage.getItem('id_token');
+    crossDataStorageClient.sendReadRequest(id_token, 'Heartrate', callbackhandler.readHeartrateCallback);
   };
 
   document.querySelector('#readSteps').onclick = function (e) {
     e.preventDefault();
-    var id_token = localStorage.getItem('id_token');
-    domainManager.sendReadRequest(id_token, 'Steps', callbackhandler.readStepsCallback);
+    const id_token = localStorage.getItem('id_token');
+    crossDataStorageClient.sendReadRequest(id_token, 'Steps', callbackhandler.readStepsCallback);
   };
 
   document.querySelector('#deleteHeartrate').onclick = function (e) {
     e.preventDefault();
-    var id_token = localStorage.getItem('id_token');
-    domainManager.sendDeleteRequest(id_token, 'Heartrate', callbackhandler.deleteCallback);
+    const id_token = localStorage.getItem('id_token');
+    crossDataStorageClient.sendDeleteRequest(id_token, 'Heartrate', callbackhandler.deleteCallback);
   };
 
   document.querySelector('#deleteSteps').onclick = function (e) {
     e.preventDefault();
-    var id_token = localStorage.getItem('id_token');
-    domainManager.sendDeleteRequest(id_token, 'Steps', callbackhandler.deleteCallback);
+    const id_token = localStorage.getItem('id_token');
+    crossDataStorageClient.sendDeleteRequest(id_token, 'Steps', callbackhandler.deleteCallback);
   };
 
   const auth0Configurator = new Auth0Configurator('BjG2eeVb5DiafM9I8Jf5GPpBTKxE4MXY', 'mircopp.eu.auth0.com');

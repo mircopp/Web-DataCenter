@@ -4,7 +4,7 @@
 
 'use strict';
 
-;(function (root) {
+(function (root) {
 
   function Auth0Configurator(clientID, domain, config = {auth: {params: {scope: 'openid email'}}, closable: false}) {
     this.lock = new Auth0Lock(clientID, domain, config);
@@ -86,10 +86,9 @@
     $('.avatar').attr('src', profile.picture).show();
   };
 
-  /**
-   * Export environments.
+  /*
+  Export the module for various environments.
    */
-
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = Auth0Configurator;
   } else if (typeof exports !== 'undefined') {
