@@ -11,7 +11,7 @@
  */
 'use strict';
 
-;(function (root) {
+(function (root) {
 
   const privateMethods = {};
 
