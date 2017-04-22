@@ -178,7 +178,7 @@ define(function (require) {
 
 
   /*
-  Private Methods
+   Private Methods
    */
   privateMethods.initializePostApi = function (_this) {
     const handleRequest = function (event) {
@@ -258,7 +258,7 @@ define(function (require) {
 
 
   /*
-  Verifiying Methods
+   Verifiying Methods
    */
   verifiers.verifyOrigin = function (_this, origin, method, userID) {
     const id = origin + '|' + userID;
@@ -310,7 +310,7 @@ define(function (require) {
 
 
   /*
-  Event Handler Methods
+   Event Handler Methods
    */
   eventHandlerMethods.defaultCreateHandler = function (_this, event, dataObject, userID) {
     let res = {status: 'success'};

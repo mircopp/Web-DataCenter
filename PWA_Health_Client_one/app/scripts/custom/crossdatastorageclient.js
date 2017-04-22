@@ -45,7 +45,6 @@
 
     /**
      * Init the iframe element and handler functions.
-     * @return void
      */
     init: function () {
       const _this = this;
@@ -73,7 +72,6 @@
 
     /**
      * Reload the iframe in order to get the newest version.
-     * @return void
      */
     reConnect: function () {
       this._iframeLoading = true;
