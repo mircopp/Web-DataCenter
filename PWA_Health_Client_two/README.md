@@ -1,32 +1,10 @@
-# WebDataCenter
+# [![Web Starter Kit](https://cloud.githubusercontent.com/assets/110953/11445049/f05512ba-9520-11e5-8fdb-8c8eb5f690d0.jpg)](https://github.com/google/web-starter-kit/releases/latest)
 
-## Setup
+## Overview
 
-### Requirements
+[Web Starter Kit](https://developers.google.com/web/tools/starter-kit/) is an opinionated boilerplate for web development. Tools for building a great experience across many devices and [performance oriented](#web-performance). Helping you to stay productive following the best practices outlined in Google's [Web Fundamentals](https://developers.google.com/web/fundamentals/). A solid starting point for both professionals and newcomers to the industry.
 
-Please make sure that you have the following software up and running:
-
-| Software                               | Reference                                                                                                                                                                                                                                                     |
-|----------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Python > 3.5         | https://www.python.org/downloads/                          |
-| Pip > 9.0                           | https://pypi.python.org/pypi/pip                                                                                                       |
-| cygwin or bash integration (for Windows)               | https://www.cygwin.com/                                                                                                 |
-| openssl               | https://www.openssl.org/                                                                                                 |
-| NodeJS                     | https://nodejs.org/en/                                                                                                                                                        |
-
-
-### Get Started
-
-Todo write getting started 
-
-
-## Background
-
-### Web Starter Kit
-
-This projects frontend is based on [Web Starter Kit](https://developers.google.com/web/tools/starter-kit/).
-
-#### Features:
+### Features
 
 | Feature                                | Summary                                                                                                                                                                                                                                                     |
 |----------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -41,7 +19,23 @@ This projects frontend is based on [Web Starter Kit](https://developers.google.c
 | Offline support                     | Thanks to our baked in [Service Worker](http://www.html5rocks.com/en/tutorials/service-worker/introduction/) [pre-caching](https://github.com/google/web-starter-kit/blob/master/gulpfile.babel.js#L226), sites deploying `dist` to a HTTPS domain will enjoy offline support. This is made possible by [sw-precache](https://github.com/GoogleChrome/sw-precache/).                                                                                                                                              |
 | PageSpeed Insights                     | Web performance metrics showing how well your site performs on mobile and desktop (Run `gulp pagespeed`)                                                                                                                                                    |
 
-#### Browser Support
+## Quickstart
+
+[Download](https://github.com/google/web-starter-kit/releases/latest) the kit or clone this repository and build on what is included in the `app` directory.
+
+There are two HTML starting points, from which you can choose:
+
+- `index.html` - the default starting point, containing Material Design layout.
+- `basic.html` - no layout, but still includes our minimal mobile best-practices
+
+Be sure to look over the [installation docs](docs/install.md) to verify your environment is prepared to run WSK.
+Once you have verified that your system can run WSK, check out the [commands](docs/commands.md) available to get started.
+
+## Web Performance
+
+Web Starter Kit strives to give you a high performance starting point out of the box. Our median Web Page Test [scores](http://www.webpagetest.org/result/151201_VW_XYC/) for the default template have a [Speed Index](https://sites.google.com/a/webpagetest.org/docs/using-webpagetest/metrics/speed-index) of ~1100 (1000 is ideal) and a repeat-visit Speed Index of ~550 thanks to Service Worker precaching.
+
+## Browser Support
 
 At present, we officially aim to support the last two versions of the following browsers:
 
@@ -52,26 +46,32 @@ At present, we officially aim to support the last two versions of the following 
 * Opera
 * Internet Explorer 9+
 
-#### Docs and Recipes
+This is not to say that Web Starter Kit cannot be used in browsers older than those reflected, but merely that our focus will be on ensuring our layouts work great in the above.
+
+## Troubleshooting
+
+If you find yourself running into issues during installation or running the tools, please check our [Troubleshooting](https://github.com/google/web-starter-kit/wiki/Troubleshooting) guide and then open an [issue](https://github.com/google/web-starter-kit/issues). We would be happy to discuss how they can be solved.
+
+## A Boilerplate-only Option
+
+If you would prefer not to use any of our tooling, delete the following files from the project: `package.json`, `gulpfile.babel.js` and `.travis.yml`. You can now safely use the boilerplate with an alternative build-system or no build-system at all if you choose.
+
+## Docs and Recipes
 
 * [File Appendix](https://github.com/google/web-starter-kit/blob/master/docs/file-appendix.md) - What do the different files here do?
 * [Using Material Design Lite's Sass](https://github.com/google/web-starter-kit/blob/master/docs/mdl-sass.md) - how to get MDL's Sass working with WSK
 * [Deployment guides](https://github.com/google/web-starter-kit/blob/master/docs/deploy.md) - available for Firebase, Google App Engine and other services.
 * [Gulp recipes](https://github.com/gulpjs/gulp/tree/master/docs/recipes) - the official Gulp recipes directory includes a comprehensive list of guides for different workflows you can add to your project.
 
+## Inspiration
 
-## Copyright and license
+Web Starter Kit is inspired by [Mobile HTML5 Boilerplate](https://html5boilerplate.com/mobile/) and Yeoman's [generator-gulp-webapp](https://github.com/yeoman/generator-webapp), having taken input from contributors to both projects during development. Our [FAQs](https://github.com/google/web-starter-kit/wiki/FAQ) attempt to answer commonly asked questions about the project.
 
-Copyright 2017 Mirco Pyrtek
+## Contributing
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+Contributions, questions and comments are all welcome and encouraged. For code contributions to Web Starter Kit, please see our [Contribution guide](CONTRIBUTING.md) before submitting a pull request. [Website](https://developers.google.com/web/tools/starter-kit/) related issues should be filed on the [Web Fundamentals](https://github.com/google/WebFundamentals/issues/new) issue tracker.
 
-   http://www.apache.org/licenses/LICENSE-2.0
+## License
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Apache 2.0  
+Copyright 2015 Google Inc

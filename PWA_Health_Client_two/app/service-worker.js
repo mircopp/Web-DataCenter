@@ -5,11 +5,11 @@
 
 'use strict';
 
-var cacheName = 'PWA_Data_center_cache';
+var cacheName = 'PWA_Data_client_cache';
+
 var systemDependantFiles = [
   // routes
   '/',
-  '/api',
 
   // html
   //'/index.html',
@@ -18,20 +18,13 @@ var systemDependantFiles = [
   // manifest
   '/manifest.json',
 
-  // RequireJS config files
-  '/config.js',
-  '/config_api.js',
-
   // JavaScript Files
   '/scripts/main.js',
   '/scripts/sw/runtime-caching.js',
   '/scripts/lib/jquery-3.1.1.js',
-  '/scripts/lib/r.js',
-  '/scripts/lib/pouchdb-6.1.2.js',
-  '/scripts/custom/contentutil.js',
-  '/scripts/custom/datastorage.js',
-  '/scripts/custom/crossdatastoragehub.js',
   '/scripts/custom/auth0connection.js',
+  '/scripts/custom/callbackmethods.js',
+  '/scripts/custom/crossdatastorageclient.js',
 
   // images
   '/icon.png',
@@ -40,33 +33,24 @@ var systemDependantFiles = [
   '/images/touch/chrome-touch-icon-192x192.png',
   '/images/touch/icon-128x128.png',
   '/images/touch/ms-touch-icon-144x144-precomposed.png',
-  '/images/icons/06_menu_grid-512.png',
-  '/images/icons/settings-5-xxl.png',
-  '/images/icons/About-icon.png',
+  '/images/icons/basic3-120_shoes_foot_step_footsteps-512.png',
+  '/images/icons/pulse-512.png',
 
   // Stylesheets
   '/styles/main.css',
-
-  // Humans
-  '/humans.txt'
 ];
 
 var externalFiles = [
   // css
   'https://fonts.googleapis.com/icon?family=Material+Icons',
-  'https://code.getmdl.io/1.2.1/material.indigo-pink.min.css',
+  'https://code.getmdl.io/1.3.0/material.red-indigo.min.css',
 
   // js
   'https://code.getmdl.io/1.2.1/material.min.js',
   '//cdn.auth0.com/js/lock/10.3.0/lock.min.js',
-  'https://kjur.github.io/jsrsasign/jsrsasign-latest-all-min.js',
-
-  // icons
-  'https://localhost:5000/icon.png',
-  'https://localhost:8000/icon.png'
+  'https://code.highcharts.com/highcharts.js',
+  'https://code.highcharts.com/modules/exporting.js',
 ];
-
-var filesToCache = systemDependantFiles.concat(externalFiles);
 
 self.addEventListener('install', function(e) {
   console.log('[ServiceWorker] Install');
@@ -74,6 +58,7 @@ self.addEventListener('install', function(e) {
     caches.open(cacheName).then(function(cache) {
       console.log('[ServiceWorker] Caching app shell');
       var promises = [];
+      promises.push(cache.addAll(systemDependantFiles));
       for ( let i = 0; i < externalFiles.length; i++ ) {
         let request = new Request(externalFiles[i], {mode : 'no-cors', header : new Headers({'Access-Control-Allow-Origin' : '*'})});
         promises.push(fetch(request)
@@ -85,7 +70,6 @@ self.addEventListener('install', function(e) {
             cache.put(request, response);
           }));
       }
-      promises.push(cache.addAll(systemDependantFiles));
       return Promise.all(promises);
     })
   );
