@@ -1,7 +1,14 @@
-/**
- * Created by Mirco on 28.02.2017.
+/*
+ * This js file is the main part of this project, handling all incoming datarequests of various web applications within the system infrastructure.
+ * It file is influenced by various ideas of a Shared LocalStorage of different authors.
+ * The links to their articles, repositories etc. are mentioned below:
  *
- * This js file is the main part of this project, handling all incoming datarequests of all registered web applications
+ ** https://www.nczonline.net/blog/2010/09/07/learning-from-xauth-cross-domain-localstorage/
+ ** https://jcubic.wordpress.com/2014/06/20/cross-domain-localstorage/
+ ** https://github.com/zendesk/cross-storage
+ *
+ * @author: Mirco Pyrtek on 19.04.2017
+ *
  */
 'use strict';
 
@@ -14,7 +21,15 @@ define(function (require) {
   const eventHandlerMethods = {};
   const verifiers = {};
 
-  // Constructor
+  /**
+   * @constructor
+   *
+   * @property {string} origin                        The origin of the web application.
+   * @property {DataStorage} dataStorage              The interface for database operations within the browser.
+   * @property {Auth0Configurator} auth0Configurator  The object handling the auth0 integration.
+   * @property {object} hostSettings                  Contains all the information about the known hosts.
+   * @property {array} keys                           Contains all keys required for incoming objects.
+   */
   function CrossDataStorageHub() {
     this.origin = location.href;
     this.dataStorage = new DataStorage();
@@ -23,7 +38,10 @@ define(function (require) {
     this.keys = [];
   }
 
-  // public methods
+  /**
+   * Initialize connection to database and setup standard handler methods for incoming requests.
+   * @param {array} keys The keys required for the incoming dataObjects.
+   */
   CrossDataStorageHub.prototype.connect = function (keys = ['type', 'unit', 'timestamp', 'applicationID', 'values']) {
     this.keys = keys;
     this.setCreateHandler();
@@ -33,7 +51,10 @@ define(function (require) {
     privateMethods.initializePostApi(this);
   };
 
-  // Getter methods
+  /**
+   * Returns the known hosts as a Promise.
+   * @param {string} userID   The UserID of the current user.
+   */
   CrossDataStorageHub.prototype.getKnownHosts = function (userID) {
     const _this = this;
     return this.dataStorage.getKnownHosts()
@@ -42,6 +63,11 @@ define(function (require) {
       });
   };
 
+  /**
+   * Returns the settings of a specific host as a Promise.
+   * @param {string} host     The host.
+   * @param {string} userID   The UserID of the current user.
+   */
   CrossDataStorageHub.prototype.getSettingsOfHost = function (host, userID) {
     const id = host + '|' + userID;
     const res = {
@@ -70,7 +96,10 @@ define(function (require) {
   };
 
 
-  // Setter methods
+  /**
+   * Caches all known hosts for a specific user.
+   * @param {string} userID   The UserID of the current user.
+   */
   CrossDataStorageHub.prototype.setKnownHosts = function (userID) {
     const _this = this;
     return this.getKnownHosts(userID)
@@ -83,6 +112,13 @@ define(function (require) {
       });
   };
 
+  /**
+   * Updates the settings for a specific user and host.
+   * @param {string} host       The host.
+   * @param {string} userID     The UserID of the current user.
+   * @param {string} method     The method that will be updated.
+   * @param {boolean} checked   The new setting for the current method.
+   */
   CrossDataStorageHub.prototype.setSettingsOfHost = function (host, userID, method, checked) {
     const _this = this;
     return this.dataStorage.setMethodOfHost(host, userID, method, checked)
@@ -91,6 +127,11 @@ define(function (require) {
       });
   };
 
+  /**
+   * Stores the profile within the database if it is not already set for a specific user.
+   * @param {string} userID   The UserID of the current user.
+   * @param {object} profile  Alle the profile information of the user.
+   */
   CrossDataStorageHub.prototype.setProfile = function (userID, profile) {
     const _this = this;
     return this.dataStorage.getUserProfile(userID)
@@ -103,24 +144,42 @@ define(function (require) {
       })
   };
 
+  /**
+   * Initializes the creation handler of the CrossDataStorageHub.
+   * @param {function} method   The creation handler.
+   */
   CrossDataStorageHub.prototype.setCreateHandler = function (method = eventHandlerMethods.defaultCreateHandler) {
     this.createHandler = method;
   };
 
+  /**
+   * Initializes the read handler of the CrossDataStorageHub.
+   * @param {function} method   The read handler.
+   */
   CrossDataStorageHub.prototype.setReadHandler = function (method = eventHandlerMethods.defaultReadHandler) {
     this.readHandler = method;
   };
 
+  /**
+   * Initializes the update handler of the CrossDataStorageHub.
+   * @param {function} method   The update handler.
+   */
   CrossDataStorageHub.prototype.setUpdateHandler = function (method = eventHandlerMethods.defaultUpdateHandler) {
     this.updateHandler = method;
   };
 
+  /**
+   * Initializes the delete handler of the CrossDataStorageHub.
+   * @param {function} method   The delete handler.
+   */
   CrossDataStorageHub.prototype.setDeleteHandler = function (method = eventHandlerMethods.defaultDeleteHandler) {
     this.deleteHandler = method;
   };
 
 
-  // private methods
+  /*
+  Private Methods
+   */
   privateMethods.initializePostApi = function (_this) {
     const handleRequest = function (event) {
       const dataObject = JSON.parse(event.data);
@@ -198,7 +257,9 @@ define(function (require) {
   };
 
 
-  // Verifying methods
+  /*
+  Verifiying Methods
+   */
   verifiers.verifyOrigin = function (_this, origin, method, userID) {
     const id = origin + '|' + userID;
     const hosts = Object.keys(_this.hostSettings);
@@ -248,7 +309,9 @@ define(function (require) {
   };
 
 
-  // Event handler methods
+  /*
+  Event Handler Methods
+   */
   eventHandlerMethods.defaultCreateHandler = function (_this, event, dataObject, userID) {
     let res = {status: 'success'};
     for (let i = 0; i < dataObject.query.dataObjects.length; i++) {

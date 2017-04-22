@@ -1,14 +1,23 @@
-/**
- * Created by Mirco on 28.02.2017.
+/*
+ * This file is a main part of the WebDataCenter infrastructure and handles all database operations in the background.
+ * @author: Mirco Pyrtek on 19.04.2017
+ *
  */
 'use strict';
 
 define(function (require) {
 
   const PouchDB = require('pouchdb');
-
   const privateMethods = {};
 
+
+  /**
+   * @constructor
+   *
+   * @property {PouchDB} userDB       The database storing all user information.
+   * @property {PouchDB} settingsDB   The database storing all settings for the service applications
+   * @property {PouchDB} peraonalData The database storing all data about the users.
+   */
   function DataStorage() {
     this.userDB = new PouchDB('UserDB');
     this.settingsDB = new PouchDB('SettingsDB');
@@ -17,8 +26,11 @@ define(function (require) {
 
   DataStorage.prototype = {
 
-    // Public Methods
 
+    /**
+     * Returns the user profile for a specific userID.
+     * @param {string} userID   The UserID of the current user.
+     */
     getUserProfile : function (userID) {
       return this.userDB.get(userID)
         .catch(function (err) {
@@ -26,15 +38,31 @@ define(function (require) {
         })
     },
 
+    /**
+     * Set a profile within the userDB for a specific userID
+     * @param {string} userID   The UserID of the current user.
+     * @param {object} profile  The new profile information.
+     * @return {Promise}
+     */
     setUserProfile : function (userID, profile) {
       profile._id = userID;
       return this.userDB.put(profile);
     },
 
+    /**
+     * Returns the known hosts.
+     * @return {Promise}
+     */
     getKnownHosts : function () {
       return this.settingsDB.allDocs();
     },
 
+    /**
+     * Reformats the output of .getKnownHosts()
+     * @param {object} documents    The documents returned by the .getKnownHosts() method.
+     * @param {string} userID       The UserID of the current user.
+     * @return {array}
+     */
     extractKnownHosts : function (documents, userID) {
       const res = [];
       for ( let i = 0; i < documents.rows.length; i++ ) {
@@ -50,10 +78,22 @@ define(function (require) {
       return res;
     },
 
+    /**
+     * Returns the settings for a specific host stored in the local database.
+     * @param {string} hostName   The name of the host.
+     * @param {string} userID     The UserID of the current user.
+     */
     getSettingsOfHost : function (hostName, userID) {
       return this.settingsDB.get(hostName + '|' + userID);
     },
 
+
+    /**
+     * Inserts a new host into the settings database.
+     * @param {string} hostName   The name of the new host.
+     * @param {string} userID     The UserID of the current user.
+     * @return {Promise}
+     */
     insertNewHost : function (hostName, userID) {
       return this.settingsDB.put({
         _id : hostName + '|' + userID,
@@ -68,6 +108,13 @@ define(function (require) {
       });
     },
 
+    /**
+     * Updates the method allowed status of specific user and hostname.
+     * @param {string} host       The name of the host.
+     * @param {string} userID     The UserID of the current user.
+     * @param {string} method     The name of the method that needs to be updated.
+     * @param {boolean} setting   The new setting for the current method.
+     */
     setMethodOfHost: function (host, userID, method, setting) {
       const db = this.settingsDB;
       return db.get(host + '|' + userID)
@@ -100,6 +147,11 @@ define(function (require) {
         });
     },
 
+    /**
+     * Deletes all data objects with a specific datatype and userID.
+     * @param {string} dataType   The data type that has to be deleted.
+     * @param {string} userID     The UserID of the current user.
+     */
     deleteObjectByDataType : function (dataType, userID) {
       const that = this;
       return this.readData(dataType, userID)
@@ -113,6 +165,11 @@ define(function (require) {
         });
     },
 
+
+    /**
+     * Inserts new data objects into the personal data database.
+     * @param {array} dataObjects   The data objects that need to be inserted.
+     */
     insertData :  function (dataObjects) {
       const that = this;
       if (dataObjects.length > 0 ) {
@@ -174,6 +231,13 @@ define(function (require) {
       }
     },
 
+    /**
+     * Updates a specific data object within the database.
+     * @param {string} dataType   Type of the data object that needs to be updated.
+     * @param {string} userID     The UserID of the current user.
+     * @param {object} oldData    The old data object.
+     * @param {object} newData    The new data object.
+     */
     updateDataObject : function (dataType, userID, oldData, newData) {
       const id = dataType + '|' + userID;
       const response = {};
@@ -196,7 +260,9 @@ define(function (require) {
     }
   };
 
-  // Private Methods
+  /*
+  Private Methods
+   */
 
   privateMethods.contains = function (collection, object) {
     for ( let i = 0; i < collection.length; i++ ) {

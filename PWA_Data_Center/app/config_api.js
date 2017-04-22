@@ -20,5 +20,7 @@ requirejs.config({
 requirejs(['crossdatastoragehub'],function(CrossDataStorageHub){
   const crossDataStorageHub = new CrossDataStorageHub();
   crossDataStorageHub.connect();
+
+  // send ready status to the parent window
   window.parent.postMessage(JSON.stringify({message : 'loaded'}), '*');
 });
